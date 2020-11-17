@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "#forge:axes",
+    "#forge:hoes",
+    "#forge:pickaxes",
+    "#forge:shovels",
+    "#forge:shears",
+    "minecraft:fishing_rod",
+    "minecraft:flint_and_steel"
+  ]
+}
