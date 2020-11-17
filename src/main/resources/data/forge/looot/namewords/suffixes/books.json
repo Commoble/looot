@@ -1,0 +1,15 @@
+{
+	"replace": false,
+	"values":
+	[
+		"codex",
+		"grimoire",
+		"guide",
+		"libram",
+		"manifesto",
+		"opus",
+		"testament",
+		"tract",
+		"tome"
+	]
+}
