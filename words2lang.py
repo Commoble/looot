@@ -34,10 +34,11 @@ and generate an appropriate json file at the given relative {outputpath}.
 
 By default, {datapath} is `src/main/resources/data/`,
 and {outputpath} is
-`src/main/resources/assets/looot-generated-words/lang/en_us.json`
+`src/main/resources/assets/looot_generated_words/lang/en_us.json`
 so if the script is running from the root of a mod project folder,
 and if an en_us.json is desired,
-then the --path and --output args can usually be omitted
+then the --path and --output args can usually be omitted.
+
 '''
 import argparse
 import string
@@ -88,7 +89,7 @@ parser.add_argument("--path", type=str, dest="path",
 	default="src/main/resources/data/",
 	help="Relative path fom the current folder to the data folder to read")
 parser.add_argument("--output", type=str, dest="output",
-	default="src/main/resources/assets/looot-generated-words/lang/en_us.json",
+	default="src/main/resources/assets/looot_generated_words/lang/en_us.json",
 	help="Relative path of the output file (will be replaced if present)")
 
 args = parser.parse_args()
