@@ -1,5 +1,6 @@
 package commoble.looot.data;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class NameList
 		this.values = values;
 	}
 	
-	public static Set<String> merge(List<NameList> raws)
+	public static List<String> merge(List<NameList> raws)
 	{
 		Set<String> set = new HashSet<>();
 		for (NameList raw : raws)
@@ -46,7 +47,9 @@ public class NameList
 			set.addAll(raw.getValues());
 		}
 		
-		return set;
+		List<String> out = new ArrayList<>(set.size());
+		out.addAll(set);
+		return out;
 	}
 	
 
