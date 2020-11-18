@@ -60,7 +60,7 @@ public class NameEnchantedItem extends LootFunction
 	{
 		Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
 		BinaryOperator<Map.Entry<Enchantment, Integer>> biggestReducer = (a,b) -> b.getValue() > a.getValue() ? b : a;
-		BinaryOperator<Map.Entry<Enchantment, Integer>> smallestReducer = (a,b) -> b.getValue() < a.getValue() ? b : a;
+//		BinaryOperator<Map.Entry<Enchantment, Integer>> smallestReducer = (a,b) -> b.getValue() < a.getValue() ? b : a;
 		
 		Function<String, Function<? super Map.Entry<Enchantment, Integer>, ? extends IFormattableTextComponent>> mapperGetter =
 			position -> entry -> new TranslationTextComponent(entry.getKey().getName()+position+entry.getValue().toString());
@@ -132,9 +132,9 @@ public class NameEnchantedItem extends LootFunction
 	{
 		Random random = context.getRandom();
 		Pair<String,String> words = getRandomWords(stack, random);
-		return new TranslationTextComponent("looot.word."+words.getLeft())
+		return new TranslationTextComponent(words.getLeft())
 			.append(new StringTextComponent(" "))
-			.append(new TranslationTextComponent("looot.word."+words.getRight()));
+			.append(new TranslationTextComponent(words.getRight()));
 //		return EpicNameWords.getName(stack, context.getRandom());
 //		Function<List<String>, String> randomThingFromList = (list) -> RandomHelper.getRandomThingFrom(context.getRandom(), list);
 //		EpicNameWords words = EpicNameWords.getNameWords();
@@ -167,7 +167,7 @@ public class NameEnchantedItem extends LootFunction
 		int first = indices / 2;			// 0,0,1,1 = prefix,prefix,noun,noun
 		int second = (indices%2) + 1;		// 1,2,1,2 = noun  ,suffix,noun,suffix
 		List<List<List<String>>> lists = Looot.INSTANCE.wordMaps.stream()
-			.map(map ->map.data.entrySet().stream() // stream of EntrySet<ResourceLocation,Set<String>>
+			.map(map ->map.translationKeys.entrySet().stream() // stream of EntrySet<ResourceLocation,Set<String>>
 				// get all entries such that either the entry is the ALL entry or the entry is a valid tag that contains the item
 				.filter(entry -> entry.getKey().equals(ALL) || isTagValidForItem(tags.get(entry.getKey()), item))
 				.map(entry -> entry.getValue()) // stream of Set<String>

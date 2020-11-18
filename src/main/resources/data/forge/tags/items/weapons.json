@@ -4,6 +4,6 @@
     "#forge:swords",
     "#forge:polearms",
     "#forge:missile_weapons",
-    "minecraft:trident"
+    "#forge:tridents"
   ]
 }

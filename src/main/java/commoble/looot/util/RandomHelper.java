@@ -37,15 +37,18 @@ public class RandomHelper
 	{
 		// get sum of sizes of lists
 		int totalSize = lists.stream().reduce(0, (size, list) -> size + list.size(), (sizeA,sizeB) -> sizeA+sizeB);
-		int index = rand.nextInt(totalSize);
-		for (List<T> list : lists)
+		if (totalSize > 0)
 		{
-			int sizeOfThisList = list.size();
-			if (index < sizeOfThisList)
+			int index = rand.nextInt(totalSize);
+			for (List<T> list : lists)
 			{
-				return Optional.of(list.get(index));
+				int sizeOfThisList = list.size();
+				if (index < sizeOfThisList)
+				{
+					return Optional.of(list.get(index));
+				}
+				index = index - sizeOfThisList;
 			}
-			index = index - sizeOfThisList;
 		}
 		return Optional.empty();
 	}

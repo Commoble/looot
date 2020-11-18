@@ -2,23 +2,16 @@
 	"replace": false,
 	"values":
 	[
-		"cloister",
-		"container",
+		"cloak",
 		"defender",
 		"guardian",
-		"minder",
 		"protector",
 		"promise",
 		"raiment",
 		"redeemer",
 		"reflector",
 		"refuser",
-		"remembrance",
 		"resentments",
-		"resistor",
-		"sanctuary",
-		"shroud",
-		"tender",
-		"watcher"
+		"resistor"
 	]
 }

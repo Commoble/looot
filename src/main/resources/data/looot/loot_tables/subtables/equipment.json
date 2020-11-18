@@ -13,7 +13,23 @@
 				{
 					"type": "minecraft:loot_table",
 					"name": "looot:subtables/armor"
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:fishing_rod",
+					"weight": 10
+				},
+				{
+					"type": "minecraft:item",
+					"name": "minecraft:trident",
+					"weight": 10
+				},
+				{
+					"type": "minecraft:tag",
+					"name": "forge:tools/golden",
+					"expand": true
 				}
+				
 			]
 		}
 	]

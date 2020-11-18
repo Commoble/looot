@@ -8,8 +8,6 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.ImmutableList;
 
 import commoble.looot.data.EnchantmentNameLimitManager;
-import commoble.looot.data.MergeableCodecDataManager;
-import commoble.looot.data.NameList;
 import commoble.looot.data.NameListManager;
 import commoble.looot.data.loot.ApplyFunctionsIfItemHasTag;
 import commoble.looot.data.loot.NameEnchantedItem;
@@ -29,10 +27,10 @@ public class Looot
 	static Logger LOGGER = LogManager.getLogger();
 	
 	public EnchantmentNameLimitManager enchantmentNameLimits = new EnchantmentNameLimitManager();
-	public MergeableCodecDataManager<NameList, List<String>> epicNamePrefixes = new NameListManager("looot/namewords/prefixes", LOGGER);
-	public MergeableCodecDataManager<NameList, List<String>> epicNameNouns = new NameListManager("looot/namewords/nouns", LOGGER);
-	public MergeableCodecDataManager<NameList, List<String>> epicNameSuffixes = new NameListManager("looot/namewords/suffixes", LOGGER);
-	public List<MergeableCodecDataManager<NameList, List<String>>> wordMaps = ImmutableList.of(this.epicNamePrefixes, this.epicNameNouns, this.epicNameSuffixes);
+	public NameListManager epicNamePrefixes = new NameListManager("looot/namewords/prefixes", LOGGER);
+	public NameListManager epicNameNouns = new NameListManager("looot/namewords/nouns", LOGGER);
+	public NameListManager epicNameSuffixes = new NameListManager("looot/namewords/suffixes", LOGGER);
+	public List<NameListManager> wordMaps = ImmutableList.of(this.epicNamePrefixes, this.epicNameNouns, this.epicNameSuffixes);
 	
 	public Looot()
 	{

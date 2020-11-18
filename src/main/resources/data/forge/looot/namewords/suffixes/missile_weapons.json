@@ -1,0 +1,13 @@
+{
+	"replace": false,
+	"values":
+	[
+		"arch",
+		"archer",
+		"aim",
+		"fletch",
+		"hunter",
+		"rain",
+		"seeker"
+	]
+}

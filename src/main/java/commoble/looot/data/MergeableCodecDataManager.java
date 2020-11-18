@@ -85,7 +85,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
 	/** Mutable, non-null map containing whatever data was loaded last time server datapacks were loaded **/ 
 	public Map<ResourceLocation, FINE> data = new HashMap<>();
 	
-	private final String folderName;
+	public final String folderName;
 	private final Logger logger;
 	private final Codec<RAW> codec;
 	private final Function<List<RAW>, FINE> merger;
