@@ -12,10 +12,10 @@ import commoble.looot.data.MergeableCodecDataManager;
 import commoble.looot.data.NameList;
 import commoble.looot.data.NameListManager;
 import commoble.looot.data.loot.ApplyFunctionsIfItemHasTag;
+import commoble.looot.data.loot.NameEnchantedItem;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -43,7 +43,6 @@ public class Looot
 		
 		modBus.addListener(this::onCommonSetup);
 		forgeBus.addListener(this::onAddReloadListeners);
-		MinecraftForge.EVENT_BUS.addListener(this::onBlockBroke);
 	}
 	
 	// modloading events are multithreaded
@@ -58,6 +57,7 @@ public class Looot
 	{
 		// register stuff to vanilla registries where forge registries don't exist
 		Registry.register(Registry.LOOT_FUNCTION_TYPE, ApplyFunctionsIfItemHasTag.ID, ApplyFunctionsIfItemHasTag.TYPE);
+		Registry.register(Registry.LOOT_FUNCTION_TYPE, NameEnchantedItem.ID, NameEnchantedItem.TYPE);
 	}
 	
 	void onAddReloadListeners(AddReloadListenerEvent event)
@@ -66,10 +66,5 @@ public class Looot
 		event.addListener(this.epicNamePrefixes);
 		event.addListener(this.epicNameNouns);
 		event.addListener(this.epicNameSuffixes);
-	}
-	
-	void onBlockBroke(BlockEvent.BreakEvent event)
-	{
-		System.out.println("Looot Loaded!");
 	}
 }

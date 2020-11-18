@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "weight": 10,
+          "expand": true,
+          "name": "forge:armor/iron"
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 10,
+          "expand": true,
+          "name": "forge:armor/chainmail"
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 10,
+          "expand": true,
+          "name": "forge:armor/leather"
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 3,
+          "expand": true,
+          "name": "forge:armor/golden"
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 1,
+          "expand": true,
+          "name": "forge:armor/diamond"
+        }
+      ]
+    }
+  ]
+}

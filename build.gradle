@@ -39,7 +39,10 @@ minecraft {
             mods {
                 looot {
 					source sourceSets.main
-					source sourceSets.examplemod
+                }
+                "looot-example-mod"
+                {
+                	source sourceSets.examplemod
                 }
             }
         }
@@ -50,7 +53,10 @@ minecraft {
 
             mods {
                 looot {
-                    source sourceSets.main
+					source sourceSets.main
+                }
+                "looot-example-mod"
+                {
                 	source sourceSets.examplemod
                 }
             }
@@ -64,7 +70,10 @@ minecraft {
 
             mods {
                 looot {
-                    source sourceSets.main
+					source sourceSets.main
+                }
+                "looot-example-mod"
+                {
                 	source sourceSets.examplemod
                 }
             }
