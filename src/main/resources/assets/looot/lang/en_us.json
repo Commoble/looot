@@ -1,4 +1,7 @@
 {
+	"looot.unknown_enchantment.prefix": "Enchanted",
+	"looot.unknown_enchantment.suffix": "of Wonder",
+	"looot.unknown_descriptor": "Mystery",
 	"enchantment.minecraft.bane_of_arthropods.prefix.1": "Slapping",
 	"enchantment.minecraft.bane_of_arthropods.prefix.2": "Swatting",
 	"enchantment.minecraft.bane_of_arthropods.prefix.3": "Smashing",

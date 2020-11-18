@@ -25,7 +25,19 @@ SOFTWARE.
 '''
 
 '''
-Util for converting nameword files to lang json entries.
+Util for converting nameword data jsons to lang json entries.
+Running this script via
+`python words2lang.py --path {datapath} --output {outputpath}`
+causes the script to look for an output folder at {datapath} relative
+to the directory the script is run from, read all nameword jsons,
+and generate an appropriate json file at the given relative {outputpath}.
+
+By default, {datapath} is `src/main/resources/data/`,
+and {outputpath} is
+`src/main/resources/assets/looot-generated-words/lang/en_us.json`
+so if the script is running from the root of a mod project folder,
+and if an en_us.json is desired,
+then the --path and --output args can usually be omitted
 '''
 import argparse
 import string

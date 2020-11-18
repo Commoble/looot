@@ -1,0 +1,15 @@
+{
+	"replace": false,
+	"values": 
+	[
+		"artifact",
+		"curio",
+		"fable",
+		"fragment",
+		"heirloom",
+		"memento",
+		"relic",
+		"vestige",
+		"treasure"
+	]
+}

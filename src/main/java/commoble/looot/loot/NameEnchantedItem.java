@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.BinaryOperator;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -43,6 +42,9 @@ public class NameEnchantedItem extends LootFunction
 	public static final LootFunctionType TYPE = new LootFunctionType(new NameEnchantedItem.Serializer());
 	public static final ResourceLocation ALL = new ResourceLocation(Looot.MODID, "all");
 	public static final ResourceLocation UNKNOWN_ENCHANTMENT = new ResourceLocation(Looot.MODID, "unknown_enchantment");
+	public static final TranslationTextComponent VERY_UNKNOWN_ENCHANTMENT_PREFIX = new TranslationTextComponent("looot.unknown_enchantment.prefix");
+	public static final TranslationTextComponent VERY_UNKNOWN_ENCHANTMENT_SUFFIX = new TranslationTextComponent("looot.unknown_enchantment.suffix");
+	public static final TranslationTextComponent UNKNOWN_DESCRIPTOR = new TranslationTextComponent("looot.unknown_descriptor");
 	
 	public NameEnchantedItem(ILootCondition[] conditionsIn)
 	{
@@ -54,6 +56,39 @@ public class NameEnchantedItem extends LootFunction
 	{
 		return TYPE;
 	}
+	
+	public static IFormattableTextComponent getNameForEnchantment(boolean isPrefix, Enchantment enchantment, int level, Random rand)
+	{
+		// check the defined enchantment name limits for the given enchantment
+		int maxKnownLevel = Looot.INSTANCE.enchantmentNameLimits.limits.getOrDefault(enchantment, 0);
+		
+		// cap the given level by the name limit
+		int highestNameableLevel = Math.min(maxKnownLevel, level);
+		
+		// if a mod has declared that they are suppling names for this enchantment, use the appropriate translation key for it
+		if (highestNameableLevel > 0)
+		{
+			String position = isPrefix ? ".prefix." : ".suffix.";
+			return new TranslationTextComponent(enchantment.getName()+position+level);
+		}
+		else
+		{
+			// no explicit names for this enchantment, use a fallback table
+			List<IFormattableTextComponent> names = isPrefix
+				? Looot.INSTANCE.epicNamePrefixes.translationKeys.get(ALL)
+				: Looot.INSTANCE.epicNameSuffixes.translationKeys.get(UNKNOWN_ENCHANTMENT);
+			if (names.size() > 0)
+			{
+				return RandomHelper.getRandomThingFrom(rand, names);
+			}
+			else
+			{
+				return isPrefix
+					? VERY_UNKNOWN_ENCHANTMENT_PREFIX
+					: VERY_UNKNOWN_ENCHANTMENT_SUFFIX;
+			}
+		}
+	}
 
 	@Override
 	protected ItemStack doApply(ItemStack stack, LootContext context)
@@ -62,8 +97,10 @@ public class NameEnchantedItem extends LootFunction
 		BinaryOperator<Map.Entry<Enchantment, Integer>> biggestReducer = (a,b) -> b.getValue() > a.getValue() ? b : a;
 //		BinaryOperator<Map.Entry<Enchantment, Integer>> smallestReducer = (a,b) -> b.getValue() < a.getValue() ? b : a;
 		
-		Function<String, Function<? super Map.Entry<Enchantment, Integer>, ? extends IFormattableTextComponent>> mapperGetter =
-			position -> entry -> new TranslationTextComponent(entry.getKey().getName()+position+entry.getValue().toString());
+		Random rand = context.getRandom();
+//		Function<Boolean, Function<? super Map.Entry<Enchantment, Integer>, ? extends IFormattableTextComponent>> mapperGetter =
+////			position -> entry -> new TranslationTextComponent(entry.getKey().getName()+position+entry.getValue().toString());
+//			position -> entry -> getNameForEnchantment(position, entry.getKey(), entry.getValue(), rand);
 		
 		// if number of enchantments is at least three, generate an epic name and ignore the three smallest enchantments in the next phase
 		if (enchantments.size() > 2)
@@ -84,8 +121,8 @@ public class NameEnchantedItem extends LootFunction
 				? Pair.of(biggest, secondBiggest)
 				: Pair.of(secondBiggest, biggest);
 			
-			Optional<IFormattableTextComponent> maybePrefix = twoBiggest.getLeft().map(mapperGetter.apply(".prefix."));
-			Optional<IFormattableTextComponent> maybeSuffix = twoBiggest.getRight().map(mapperGetter.apply(".suffix."));
+			Optional<IFormattableTextComponent> maybePrefix = twoBiggest.getLeft().map(entry -> getNameForEnchantment(true, entry.getKey(), entry.getValue(), rand));
+			Optional<IFormattableTextComponent> maybeSuffix = twoBiggest.getRight().map(entry -> getNameForEnchantment(false, entry.getKey(), entry.getValue(), rand));
 			
 			ITextComponent stackText = stack.getDisplayName();
 			if (stackText instanceof IFormattableTextComponent)
@@ -115,27 +152,28 @@ public class NameEnchantedItem extends LootFunction
 	public static IFormattableTextComponent getEpicName(ItemStack stack, LootContext context)
 	{
 		Random random = context.getRandom();
-		Pair<String,String> words = getRandomWords(stack, random);
-		return new TranslationTextComponent(words.getLeft())
+		Pair<IFormattableTextComponent,IFormattableTextComponent> words = getRandomWords(stack, random);
+		return words.getLeft()
 			.append(new StringTextComponent(" "))
-			.append(new TranslationTextComponent(words.getRight()));
+			.append(words.getRight());
 	}
 	
-	public static Pair<String,String> getRandomWords(ItemStack stack, Random rand)
+	public static Pair<IFormattableTextComponent,IFormattableTextComponent> getRandomWords(ItemStack stack, Random rand)
 	{
 		Item item = stack.getItem();
 		ITagCollection<Item> tags = ItemTags.getCollection();
 		int indices = rand.nextInt(4);	// 0,1,2,3
 		int first = indices / 2;			// 0,0,1,1 = prefix,prefix,noun,noun
 		int second = (indices%2) + 1;		// 1,2,1,2 = noun  ,suffix,noun,suffix
-		List<List<List<String>>> lists = Looot.INSTANCE.wordMaps.stream()
-			.map(map ->map.translationKeys.entrySet().stream() // stream of EntrySet<ResourceLocation,Set<String>>
+		List<List<List<IFormattableTextComponent>>> lists = Looot.INSTANCE.wordMaps.stream()
+			.map(map ->map.translationKeys.entrySet().stream() // stream of EntrySet<ResourceLocation,Set<IFormattableTextComponent>>
 				// get all entries such that either the entry is the ALL entry or the entry is a valid tag that contains the item
 				.filter(entry -> entry.getKey().equals(ALL) || isTagValidForItem(tags.get(entry.getKey()), item))
-				.map(entry -> entry.getValue()) // stream of Set<String>
-				.collect(Collectors.toCollection(ArrayList<List<String>>::new)))
-			.collect(Collectors.toCollection(ArrayList<List<List<String>>>::new));
-		IntFunction<String> getter = i -> RandomHelper.getRandomThingFromMultipleLists(rand, lists.get(i)).orElse("Failure");
+				.map(entry -> entry.getValue()) // stream of Set<IFormattableTextComponent>
+				.collect(Collectors.toCollection(ArrayList<List<IFormattableTextComponent>>::new)))
+			.collect(Collectors.toCollection(ArrayList<List<List<IFormattableTextComponent>>>::new));
+		IntFunction<IFormattableTextComponent> getter = i -> RandomHelper.getRandomThingFromMultipleLists(rand, lists.get(i))
+			.orElse(UNKNOWN_DESCRIPTOR);
 		return Pair.of(getter.apply(first), getter.apply(second));
 	
 	}
