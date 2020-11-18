@@ -1,4 +1,4 @@
-package commoble.looot.data.loot;
+package commoble.looot.loot;
 
 import java.util.ArrayList;
 import java.util.List;

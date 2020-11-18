@@ -9,8 +9,8 @@ import com.google.common.collect.ImmutableList;
 
 import commoble.looot.data.EnchantmentNameLimitManager;
 import commoble.looot.data.NameListManager;
-import commoble.looot.data.loot.ApplyFunctionsIfItemHasTag;
-import commoble.looot.data.loot.NameEnchantedItem;
+import commoble.looot.loot.ApplyFunctionsIfItemHasTag;
+import commoble.looot.loot.NameEnchantedItem;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
