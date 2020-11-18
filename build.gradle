@@ -14,11 +14,18 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${mc_version}-${mod_version}"
-group = "com.github.commoble.${modid}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "${modid}"
+version = "${mod_version}"
+group = "commoble.${modid}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "${modid}-${mc_version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+sourceSets
+{
+	main
+	examplemod
+	test
+}
 
 minecraft {
     mappings channel: 'snapshot', version: "${mappings_version}"    
@@ -30,8 +37,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                modid {
-                    source sourceSets.main
+                looot {
+					source sourceSets.main
+					source sourceSets.examplemod
                 }
             }
         }
@@ -41,8 +49,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                modid {
+                looot {
                     source sourceSets.main
+                	source sourceSets.examplemod
                 }
             }
         }
@@ -54,8 +63,9 @@ minecraft {
             args '--mod', 'modid', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                modid {
+                looot {
                     source sourceSets.main
+                	source sourceSets.examplemod
                 }
             }
         }
@@ -77,12 +87,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    
-	// compile against the JEI API but do not include it at runtime
-	// compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
-	// at runtime, use the full JEI jar
-	// runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
-
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -95,22 +101,45 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"Commoble",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			"Maven-Artifact":"${project.group}:${project.archivesBaseName}:${project.version}"
         ])
     }
 }
 
-jar.finalizedBy('reobfJar') 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = "javadoc"
+	from javadoc.destinationDir
+}
 
+task sourcesJar(type: Jar) {
+	classifier = "sources"
+	from sourceSets.main.allJava
+}
+
+artifacts {
+	archives javadocJar
+	archives sourcesJar
+	// archives examplemodJar
+}
+
+jar.finalizedBy('reobfJar')
+
+// run "gradlew build publish" to build jars and generate a maven repo for them
+// run "gradlew build" to build the jars without mavening them
 publishing {
     publications {
         mavenJava(MavenPublication) {
+			artifactId project.archivesBaseName
             artifact jar
+			artifact sourcesJar
+			artifact javadocJar
         }
     }
     repositories {
         maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+			name="localMaven"
+            url "file:///${project.projectDir}/maven"
         }
     }
 }
