@@ -69,20 +69,6 @@ public class NameEnchantedItem extends LootFunction
 		if (enchantments.size() > 2)
 		{
 			stack.setDisplayName(getEpicName(stack, context).mergeStyle(TextFormatting.LIGHT_PURPLE));
-			
-//			IntStream.range(0,3).forEach(
-//				i-> enchantments.entrySet().stream()
-//				.reduce(smallestReducer)
-//				.ifPresent(entry -> enchantments.remove(entry.getKey()))
-//			);
-			
-			// if more than 3 enchantments, get the biggest and apply an extra prefix
-//			enchantments.entrySet().stream()
-//				.reduce(biggestReducer)
-//				.map(mapperGetter.apply(".prefix."))
-//				.ifPresent(text -> stack.setDisplayName(text.appendText(" ").appendSibling(stack.getDisplayName())));
-			
-//			stack.setDisplayName(stack.getDisplayName().applyTextStyle(TextFormatting.LIGHT_PURPLE));
 		}
 		else // 0, 1, or 2 enchantments
 		{
@@ -118,11 +104,9 @@ public class NameEnchantedItem extends LootFunction
 
 	public static class Serializer extends LootFunction.Serializer<NameEnchantedItem>
 	{
-
 		@Override
 		public NameEnchantedItem deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn)
 		{
-			// TODO Auto-generated method stub
 			return new NameEnchantedItem(conditionsIn);
 		}
 		
@@ -135,28 +119,6 @@ public class NameEnchantedItem extends LootFunction
 		return new TranslationTextComponent(words.getLeft())
 			.append(new StringTextComponent(" "))
 			.append(new TranslationTextComponent(words.getRight()));
-//		return EpicNameWords.getName(stack, context.getRandom());
-//		Function<List<String>, String> randomThingFromList = (list) -> RandomHelper.getRandomThingFrom(context.getRandom(), list);
-//		EpicNameWords words = EpicNameWords.getNameWords();
-////		String prefix = randomThingFromList.apply(NameWords.generic_prefixes);
-////		String noun = randomThingFromList.apply(NameWords.generic_nouns);
-////		String suffix = randomThingFromList.apply(NameWords.itemTypeSuffixes.get(stack.getEquipmentSlot()));
-//		
-//		Supplier<ITextComponent> textGetter = RandomHelper.chooseRandomThing(context.getRandom(),
-//			() -> new TranslationTextComponent("dungeonfist.generic.noun."+noun)
-//				.appendSibling(new StringTextComponent(" ")
-//				.appendSibling(new TranslationTextComponent("dungeonfist.weapon.suffix."+suffix))),
-//				
-//			() -> new TranslationTextComponent("dungeonfist.generic.prefix."+prefix)
-//				.appendSibling(new StringTextComponent(" ")
-//				.appendSibling(new TranslationTextComponent("dungeonfist.generic.noun."+noun))),
-//				
-//			() -> new TranslationTextComponent("dungeonfist.generic.prefix."+prefix)
-//				.appendSibling(new StringTextComponent(" ")
-//				.appendSibling(new TranslationTextComponent("dungeonfist.weapon.suffix."+suffix)))
-//				);
-//		
-//		return textGetter.get();
 	}
 	
 	public static Pair<String,String> getRandomWords(ItemStack stack, Random rand)
