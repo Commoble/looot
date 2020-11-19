@@ -1,0 +1,44 @@
+{
+	"type": "minecraft:block",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:loot_table",
+					"name": "loootexamplemod:subtables/weapons",
+					"functions":
+					[
+						{
+							"function": "minecraft:enchant_with_levels",
+							"levels": 
+							{
+								"min": 1.0,
+								"max": 50.0,
+								"type": "minecraft:uniform"
+							},
+							"treasure": true
+						},
+						{
+							"function": "looot:name_enchanted_item",
+							"minor_style":
+							{
+								"color": "red",
+								"bold": true,
+								"italic": true,
+								"underlined": true
+							},
+							"major_style":
+							{
+								"color": "#c7b989",
+								"font": "minecraft:alt"
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,34 @@
+{
+	"type": "minecraft:block",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:loot_table",
+					"name": "loootexamplemod:subtables/weapons",
+					"functions":
+					[
+						{
+							"function": "looot:apply_functions_if_item_has_tag",
+							"tag": "forge:weapons/wooden",
+							"functions":
+							[
+								{
+									"function": "minecraft:set_name",
+									"name":
+									{
+										"text": "Yep, it's wood",
+										"color": "green"
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

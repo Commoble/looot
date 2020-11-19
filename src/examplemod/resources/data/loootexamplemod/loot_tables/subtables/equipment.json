@@ -8,25 +8,23 @@
 			[
 				{
 					"type": "minecraft:loot_table",
-					"name": "looot:subtables/weapons"
+					"name": "loootexamplemod:subtables/weapons"
 				},
 				{
 					"type": "minecraft:loot_table",
-					"name": "looot:subtables/armor"
+					"name": "loootexamplemod:subtables/armor"
 				},
 				{
 					"type": "minecraft:item",
-					"name": "minecraft:fishing_rod",
-					"weight": 10
+					"name": "minecraft:fishing_rod"
 				},
 				{
 					"type": "minecraft:item",
-					"name": "minecraft:trident",
-					"weight": 10
+					"name": "minecraft:trident"
 				},
 				{
 					"type": "minecraft:tag",
-					"name": "forge:tools/golden",
+					"name": "forge:tools",
 					"expand": true
 				}
 				

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,9 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 
 import commoble.looot.Looot;
 import commoble.looot.util.RandomHelper;
@@ -33,6 +36,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -45,10 +49,17 @@ public class NameEnchantedItem extends LootFunction
 	public static final TranslationTextComponent VERY_UNKNOWN_ENCHANTMENT_PREFIX = new TranslationTextComponent("looot.unknown_enchantment.prefix");
 	public static final TranslationTextComponent VERY_UNKNOWN_ENCHANTMENT_SUFFIX = new TranslationTextComponent("looot.unknown_enchantment.suffix");
 	public static final TranslationTextComponent UNKNOWN_DESCRIPTOR = new TranslationTextComponent("looot.unknown_descriptor");
+	public static final Style DEFAULT_MINOR_STYLE = Style.EMPTY.applyFormatting(TextFormatting.AQUA);
+	public static final Style DEFAULT_MAJOR_STYLE = Style.EMPTY.applyFormatting(TextFormatting.LIGHT_PURPLE);
 	
-	public NameEnchantedItem(ILootCondition[] conditionsIn)
+	protected final Optional<Style> minorStyle;	// style to be used for 1-2 enchantment items, defaults to aqua text
+	protected final Optional<Style> majorStyle;	// style to be used for 3+ enchantment items, defaults to light purple text
+	
+	public NameEnchantedItem(ILootCondition[] conditionsIn, Optional<Style> minorStyle, Optional<Style> majorStyle)
 	{
 		super(conditionsIn);
+		this.minorStyle = minorStyle;
+		this.majorStyle = majorStyle;
 	}
 
 	@Override
@@ -103,11 +114,12 @@ public class NameEnchantedItem extends LootFunction
 //			position -> entry -> getNameForEnchantment(position, entry.getKey(), entry.getValue(), rand);
 		
 		// if number of enchantments is at least three, generate an epic name and ignore the three smallest enchantments in the next phase
-		if (enchantments.size() > 2)
+		int enchantmentCount = enchantments.size();
+		if (enchantmentCount > 2)
 		{
-			stack.setDisplayName(getEpicName(stack, context).mergeStyle(TextFormatting.LIGHT_PURPLE));
+			stack.setDisplayName(getEpicName(stack, context).mergeStyle(this.majorStyle.orElse(DEFAULT_MAJOR_STYLE)));
 		}
-		else // 0, 1, or 2 enchantments
+		else if (enchantmentCount > 0) // 1, or 2 enchantments
 		{
 			// get the two biggest (if any) and generate prefix/suffix based on them
 			Optional<Map.Entry<Enchantment,Integer>> biggest = enchantments.entrySet().stream()
@@ -132,7 +144,7 @@ public class NameEnchantedItem extends LootFunction
 					.orElse(formattableStackText);
 				IFormattableTextComponent suffixedStackText = maybeSuffix.map(suffix -> prefixedStackText.appendString(" ").append(suffix))
 					.orElse(prefixedStackText);
-				stack.setDisplayName(suffixedStackText);
+				stack.setDisplayName(suffixedStackText.mergeStyle(this.minorStyle.orElse(DEFAULT_MINOR_STYLE)));
 			}
 		}
 
@@ -141,12 +153,28 @@ public class NameEnchantedItem extends LootFunction
 
 	public static class Serializer extends LootFunction.Serializer<NameEnchantedItem>
 	{
+		public static final Style.Serializer STYLE_SERIALIZER = new Style.Serializer();
+		
 		@Override
 		public NameEnchantedItem deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn)
 		{
-			return new NameEnchantedItem(conditionsIn);
+			JsonElement minorStyleElement = object.get("minor_style");
+			JsonElement majorStyleElement = object.get("major_style");
+			Function<JsonElement,Style> styleDeserializer = element -> STYLE_SERIALIZER.deserialize(element, Style.class, deserializationContext);
+			Optional<Style> minorStyle = Optional.ofNullable(minorStyleElement)
+				.map(styleDeserializer);
+			Optional<Style> majorStyle = Optional.ofNullable(majorStyleElement)
+				.map(styleDeserializer);
+			return new NameEnchantedItem(conditionsIn, minorStyle, majorStyle);
 		}
-		
+
+		@Override
+		public void serialize(JsonObject jsonObject, NameEnchantedItem lootFunction, JsonSerializationContext serializer)
+		{
+			super.serialize(jsonObject, lootFunction, serializer);
+			lootFunction.minorStyle.ifPresent(style -> jsonObject.add("minor_style", STYLE_SERIALIZER.serialize(style, Style.class, serializer)));
+			lootFunction.majorStyle.ifPresent(style -> jsonObject.add("major_style", STYLE_SERIALIZER.serialize(style, Style.class, serializer)));
+		}
 	}
 	
 	public static IFormattableTextComponent getEpicName(ItemStack stack, LootContext context)
