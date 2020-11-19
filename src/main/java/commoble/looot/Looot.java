@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 
 import commoble.looot.data.EnchantmentNameLimitManager;
 import commoble.looot.data.NameListManager;
-import commoble.looot.loot.ApplyFunctionsIfItemHasTag;
+import commoble.looot.loot.ApplyFunctionsIfTagged;
 import commoble.looot.loot.NameEnchantedItem;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,7 +54,7 @@ public class Looot
 	void afterCommonSetup()
 	{
 		// register stuff to vanilla registries where forge registries don't exist
-		Registry.register(Registry.LOOT_FUNCTION_TYPE, ApplyFunctionsIfItemHasTag.ID, ApplyFunctionsIfItemHasTag.TYPE);
+		Registry.register(Registry.LOOT_FUNCTION_TYPE, ApplyFunctionsIfTagged.ID, ApplyFunctionsIfTagged.TYPE);
 		Registry.register(Registry.LOOT_FUNCTION_TYPE, NameEnchantedItem.ID, NameEnchantedItem.TYPE);
 	}
 	

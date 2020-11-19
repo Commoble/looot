@@ -12,7 +12,7 @@
 					"functions":
 					[
 						{
-							"function": "looot:apply_functions_if_item_has_tag",
+							"function": "looot:apply_functions_if_tagged",
 							"tag": "forge:weapons/wooden",
 							"functions":
 							[

@@ -26,17 +26,17 @@ import net.minecraft.util.ResourceLocation;
 //let's say we want to run one or more loot functions if a generated item belongs to an itemtag
 //this can't be done by the vanilla loot conditions or functions, so it's a good candidate for making a new feature
 //unfortunately, loot conditions can't observe the itemstack itself, so we have to write the condition as a loot function instead
-public class ApplyFunctionsIfItemHasTag extends LootFunction
+public class ApplyFunctionsIfTagged extends LootFunction
 {
-	public static final ResourceLocation ID = new ResourceLocation(Looot.MODID, "apply_functions_if_item_has_tag");
+	public static final ResourceLocation ID = new ResourceLocation(Looot.MODID, "apply_functions_if_tagged");
 	public static final String TAG_KEY = "tag";
 	public static final String FUNCTIONS_KEY = "functions";
-	public static final LootFunctionType TYPE = new LootFunctionType(new ApplyFunctionsIfItemHasTag.Serializer());
+	public static final LootFunctionType TYPE = new LootFunctionType(new ApplyFunctionsIfTagged.Serializer());
 
 	private final ITag<Item> tag;
 	private final ILootFunction[] subFunctions;
 
-	public ApplyFunctionsIfItemHasTag(ILootCondition[] conditions, ResourceLocation tagName, ILootFunction[] subFunctions)
+	public ApplyFunctionsIfTagged(ILootCondition[] conditions, ResourceLocation tagName, ILootFunction[] subFunctions)
 	{
 		super(conditions);
 		this.tag = ItemTags.makeWrapperTag(tagName.toString());
@@ -72,17 +72,17 @@ public class ApplyFunctionsIfItemHasTag extends LootFunction
 	public static LootFunction.Builder<?> getBuilder(ResourceLocation tag, ILootFunction ... subFunctions)
 	{
 		return builder((conditions) -> {
-			return new ApplyFunctionsIfItemHasTag(conditions, tag, subFunctions);
+			return new ApplyFunctionsIfTagged(conditions, tag, subFunctions);
 		});
 	}
 
 	// The serializer is used for generating loot table jsons from code
 	// The deserializer is used for reading a loot table json into code
-	public static class Serializer extends LootFunction.Serializer<ApplyFunctionsIfItemHasTag>
+	public static class Serializer extends LootFunction.Serializer<ApplyFunctionsIfTagged>
 	{
 		// writing to json is very similar to writing to NBT
 		@Override
-		public void serialize(JsonObject baseObject, ApplyFunctionsIfItemHasTag applicator,
+		public void serialize(JsonObject baseObject, ApplyFunctionsIfTagged applicator,
 				JsonSerializationContext serializationContext)
 		{
 			super.serialize(baseObject, applicator, serializationContext);
@@ -103,7 +103,7 @@ public class ApplyFunctionsIfItemHasTag extends LootFunction
 		}
 
 		@Override
-		public ApplyFunctionsIfItemHasTag deserialize(JsonObject baseObject,
+		public ApplyFunctionsIfTagged deserialize(JsonObject baseObject,
 				JsonDeserializationContext deserializationContext, ILootCondition[] conditions)
 		{
 			// get the tag from the json
@@ -113,7 +113,7 @@ public class ApplyFunctionsIfItemHasTag extends LootFunction
 			ILootFunction[] subFunctions = JSONUtils.deserializeClass(baseObject, FUNCTIONS_KEY, new ILootFunction[0],
 					deserializationContext, ILootFunction[].class);
 
-			return new ApplyFunctionsIfItemHasTag(conditions, tagRL, subFunctions);
+			return new ApplyFunctionsIfTagged(conditions, tagRL, subFunctions);
 		}
 	}
 }
