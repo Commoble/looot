@@ -32,6 +32,7 @@ import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITagCollection;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
@@ -52,14 +53,16 @@ public class NameEnchantedItem extends LootFunction
 	public static final Style DEFAULT_MINOR_STYLE = Style.EMPTY.applyFormatting(TextFormatting.AQUA);
 	public static final Style DEFAULT_MAJOR_STYLE = Style.EMPTY.applyFormatting(TextFormatting.LIGHT_PURPLE);
 	
+	protected final boolean ignoreEnchantments; // if true, will use the "epic name" regardless of the item's enchantments
 	protected final Optional<Style> minorStyle;	// style to be used for 1-2 enchantment items, defaults to aqua text
 	protected final Optional<Style> majorStyle;	// style to be used for 3+ enchantment items, defaults to light purple text
 	
-	public NameEnchantedItem(ILootCondition[] conditionsIn, Optional<Style> minorStyle, Optional<Style> majorStyle)
+	public NameEnchantedItem(ILootCondition[] conditionsIn, Optional<Style> minorStyle, Optional<Style> majorStyle, boolean ignoreEnchantments)
 	{
 		super(conditionsIn);
 		this.minorStyle = minorStyle;
 		this.majorStyle = majorStyle;
+		this.ignoreEnchantments = ignoreEnchantments;
 	}
 
 	@Override
@@ -115,7 +118,7 @@ public class NameEnchantedItem extends LootFunction
 		
 		// if number of enchantments is at least three, generate an epic name and ignore the three smallest enchantments in the next phase
 		int enchantmentCount = enchantments.size();
-		if (enchantmentCount > 2)
+		if (this.ignoreEnchantments || enchantmentCount > 2)
 		{
 			stack.setDisplayName(getEpicName(stack, context).mergeStyle(this.majorStyle.orElse(DEFAULT_MAJOR_STYLE)));
 		}
@@ -165,7 +168,8 @@ public class NameEnchantedItem extends LootFunction
 				.map(styleDeserializer);
 			Optional<Style> majorStyle = Optional.ofNullable(majorStyleElement)
 				.map(styleDeserializer);
-			return new NameEnchantedItem(conditionsIn, minorStyle, majorStyle);
+			boolean ignoreEnchantments = JSONUtils.getBoolean(object, "ignore_enchantments", false);
+			return new NameEnchantedItem(conditionsIn, minorStyle, majorStyle, ignoreEnchantments);
 		}
 
 		@Override
@@ -174,6 +178,10 @@ public class NameEnchantedItem extends LootFunction
 			super.serialize(jsonObject, lootFunction, serializer);
 			lootFunction.minorStyle.ifPresent(style -> jsonObject.add("minor_style", STYLE_SERIALIZER.serialize(style, Style.class, serializer)));
 			lootFunction.majorStyle.ifPresent(style -> jsonObject.add("major_style", STYLE_SERIALIZER.serialize(style, Style.class, serializer)));
+			if (lootFunction.ignoreEnchantments)
+			{
+				jsonObject.addProperty("ignore_enchantments", true); // defaults to false, so we only serialize if true
+			}
 		}
 	}
 	

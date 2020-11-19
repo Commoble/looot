@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:block",
+	"pools": 
+	[
+		{
+			"rolls": 1,
+			"entries": 
+			[
+				{
+					"type": "minecraft:loot_table",
+					"name": "loootexamplemod:subtables/weapons",
+					"functions":
+					[
+						{
+							"function": "looot:name_enchanted_item",
+							"ignore_enchantments": true
+						}
+					]
+				}
+			]
+		}
+	]
+}
