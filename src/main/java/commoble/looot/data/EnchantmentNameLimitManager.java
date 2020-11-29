@@ -6,17 +6,19 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import commoble.looot.Looot;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
 
 public class EnchantmentNameLimitManager extends MergeableCodecDataManager<EnchantmentNameLimits, Map<Enchantment, Integer>>
-{	
+{
+	public static final Identifier ID = new Identifier(Looot.MODID, "enchantment_name_limits");
 	public static final String FOLDER_NAME = "looot/enchantment_name_limits";
 	static final Logger LOGGER = LogManager.getLogger();
 	
@@ -24,11 +26,11 @@ public class EnchantmentNameLimitManager extends MergeableCodecDataManager<Encha
 
 	public EnchantmentNameLimitManager()
 	{
-		super(FOLDER_NAME, LOGGER, EnchantmentNameLimits.CODEC, EnchantmentNameLimitManager::mergeData);
+		super(ID, FOLDER_NAME, LOGGER, EnchantmentNameLimits.CODEC, EnchantmentNameLimitManager::mergeData);
 	}
 
 	@Override
-	protected void apply(Map<ResourceLocation, Map<Enchantment, Integer>> processedData, IResourceManager resourceManager, IProfiler profiler)
+	public void apply(Map<Identifier, Map<Enchantment, Integer>> processedData, ResourceManager resourceManager, Profiler profiler)
 	{
 		super.apply(processedData, resourceManager, profiler);
 		this.limits = combineMergedData(processedData);		
@@ -53,7 +55,7 @@ public class EnchantmentNameLimitManager extends MergeableCodecDataManager<Encha
 		return map;
 	}
 	
-	static Object2IntOpenHashMap<Enchantment> combineMergedData(Map<ResourceLocation, Map<Enchantment, Integer>> processedData)
+	static Object2IntOpenHashMap<Enchantment> combineMergedData(Map<Identifier, Map<Enchantment, Integer>> processedData)
 	{
 		Object2IntOpenHashMap<Enchantment> data = new Object2IntOpenHashMap<>();
 		processedData.values().forEach(subMap -> mergeSubMapIntoFinalMap(data, subMap));

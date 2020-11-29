@@ -12,52 +12,51 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-
 import commoble.looot.Looot;
 import commoble.looot.util.RandomHelper;
+import org.apache.commons.lang3.tuple.Pair;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootFunction;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ITagCollection;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagGroup;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 
-public class NameEnchantedItem extends LootFunction
+public class NameEnchantedItem extends ConditionalLootFunction
 {
-	public static final ResourceLocation ID = new ResourceLocation(Looot.MODID, "name_enchanted_item");
+	public static final Identifier ID = new Identifier(Looot.MODID, "name_enchanted_item");
 	public static final LootFunctionType TYPE = new LootFunctionType(new NameEnchantedItem.Serializer());
-	public static final ResourceLocation ALL = new ResourceLocation(Looot.MODID, "all");
-	public static final ResourceLocation UNKNOWN_ENCHANTMENT = new ResourceLocation(Looot.MODID, "unknown_enchantment");
-	public static final TranslationTextComponent VERY_UNKNOWN_ENCHANTMENT_PREFIX = new TranslationTextComponent("looot.unknown_enchantment.prefix");
-	public static final TranslationTextComponent VERY_UNKNOWN_ENCHANTMENT_SUFFIX = new TranslationTextComponent("looot.unknown_enchantment.suffix");
-	public static final TranslationTextComponent UNKNOWN_DESCRIPTOR = new TranslationTextComponent("looot.unknown_descriptor");
-	public static final Style DEFAULT_MINOR_STYLE = Style.EMPTY.applyFormatting(TextFormatting.AQUA);
-	public static final Style DEFAULT_MAJOR_STYLE = Style.EMPTY.applyFormatting(TextFormatting.LIGHT_PURPLE);
+	public static final Identifier ALL = new Identifier(Looot.MODID, "all");
+	public static final Identifier UNKNOWN_ENCHANTMENT = new Identifier(Looot.MODID, "unknown_enchantment");
+	public static final TranslatableText VERY_UNKNOWN_ENCHANTMENT_PREFIX = new TranslatableText("looot.unknown_enchantment.prefix");
+	public static final TranslatableText VERY_UNKNOWN_ENCHANTMENT_SUFFIX = new TranslatableText("looot.unknown_enchantment.suffix");
+	public static final TranslatableText UNKNOWN_DESCRIPTOR = new TranslatableText("looot.unknown_descriptor");
+	public static final Style DEFAULT_MINOR_STYLE = Style.EMPTY.withFormatting(Formatting.AQUA);
+	public static final Style DEFAULT_MAJOR_STYLE = Style.EMPTY.withFormatting(Formatting.LIGHT_PURPLE);
 	
 	protected final boolean ignoreEnchantments; // if true, will use the "epic name" regardless of the item's enchantments
 	protected final Optional<Style> minorStyle;	// style to be used for 1-2 enchantment items, defaults to aqua text
 	protected final Optional<Style> majorStyle;	// style to be used for 3+ enchantment items, defaults to light purple text
 	
-	public NameEnchantedItem(ILootCondition[] conditionsIn, Optional<Style> minorStyle, Optional<Style> majorStyle, boolean ignoreEnchantments)
+	public NameEnchantedItem(LootCondition[] conditionsIn, Optional<Style> minorStyle, Optional<Style> majorStyle, boolean ignoreEnchantments)
 	{
 		super(conditionsIn);
 		this.minorStyle = minorStyle;
@@ -66,12 +65,11 @@ public class NameEnchantedItem extends LootFunction
 	}
 
 	@Override
-	public LootFunctionType getFunctionType()
-	{
+	public LootFunctionType getType() {
 		return TYPE;
 	}
 	
-	public static IFormattableTextComponent getNameForEnchantment(boolean isPrefix, Enchantment enchantment, int level, Random rand)
+	public static MutableText getNameForEnchantment(boolean isPrefix, Enchantment enchantment, int level, Random rand)
 	{
 		// check the defined enchantment name limits for the given enchantment
 		int maxKnownLevel = Looot.INSTANCE.enchantmentNameLimits.limits.getOrDefault(enchantment, 0);
@@ -83,12 +81,12 @@ public class NameEnchantedItem extends LootFunction
 		if (highestNameableLevel > 0)
 		{
 			String position = isPrefix ? ".prefix." : ".suffix.";
-			return new TranslationTextComponent(enchantment.getName()+position+level);
+			return new TranslatableText(enchantment.getTranslationKey()+position+level);
 		}
 		else
 		{
 			// no explicit names for this enchantment, use a fallback table
-			List<IFormattableTextComponent> names = isPrefix
+			List<MutableText> names = isPrefix
 				? Looot.INSTANCE.epicNamePrefixes.translationKeys.get(ALL)
 				: Looot.INSTANCE.epicNameSuffixes.translationKeys.get(UNKNOWN_ENCHANTMENT);
 			if (names.size() > 0)
@@ -105,22 +103,22 @@ public class NameEnchantedItem extends LootFunction
 	}
 
 	@Override
-	protected ItemStack doApply(ItemStack stack, LootContext context)
+	protected ItemStack process(ItemStack stack, LootContext context)
 	{
-		Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+		Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(stack);
 		BinaryOperator<Map.Entry<Enchantment, Integer>> biggestReducer = (a,b) -> b.getValue() > a.getValue() ? b : a;
 //		BinaryOperator<Map.Entry<Enchantment, Integer>> smallestReducer = (a,b) -> b.getValue() < a.getValue() ? b : a;
 		
 		Random rand = context.getRandom();
-//		Function<Boolean, Function<? super Map.Entry<Enchantment, Integer>, ? extends IFormattableTextComponent>> mapperGetter =
-////			position -> entry -> new TranslationTextComponent(entry.getKey().getName()+position+entry.getValue().toString());
+//		Function<Boolean, Function<? super Map.Entry<Enchantment, Integer>, ? extends MutableText>> mapperGetter =
+////			position -> entry -> new TranslatableText(entry.getKey().getName()+position+entry.getValue().toString());
 //			position -> entry -> getNameForEnchantment(position, entry.getKey(), entry.getValue(), rand);
 		
 		// if number of enchantments is at least three, generate an epic name and ignore the three smallest enchantments in the next phase
 		int enchantmentCount = enchantments.size();
 		if (this.ignoreEnchantments || enchantmentCount > 2)
 		{
-			stack.setDisplayName(getEpicName(stack, context).mergeStyle(this.majorStyle.orElse(DEFAULT_MAJOR_STYLE)));
+			stack.setCustomName(getEpicName(stack, context).fillStyle(this.majorStyle.orElse(DEFAULT_MAJOR_STYLE)));
 		}
 		else if (enchantmentCount > 0) // 1, or 2 enchantments
 		{
@@ -136,30 +134,30 @@ public class NameEnchantedItem extends LootFunction
 				? Pair.of(biggest, secondBiggest)
 				: Pair.of(secondBiggest, biggest);
 			
-			Optional<IFormattableTextComponent> maybePrefix = twoBiggest.getLeft().map(entry -> getNameForEnchantment(true, entry.getKey(), entry.getValue(), rand));
-			Optional<IFormattableTextComponent> maybeSuffix = twoBiggest.getRight().map(entry -> getNameForEnchantment(false, entry.getKey(), entry.getValue(), rand));
+			Optional<MutableText> maybePrefix = twoBiggest.getLeft().map(entry -> getNameForEnchantment(true, entry.getKey(), entry.getValue(), rand));
+			Optional<MutableText> maybeSuffix = twoBiggest.getRight().map(entry -> getNameForEnchantment(false, entry.getKey(), entry.getValue(), rand));
 			
-			ITextComponent stackText = stack.getDisplayName();
-			if (stackText instanceof IFormattableTextComponent)
+			Text stackText = stack.getName();
+			if (stackText instanceof MutableText)
 			{
-				IFormattableTextComponent formattableStackText = (IFormattableTextComponent)stackText;
-				IFormattableTextComponent prefixedStackText = maybePrefix.map(prefix -> prefix.appendString(" ").append(formattableStackText))
+				MutableText formattableStackText = (MutableText)stackText;
+				MutableText prefixedStackText = maybePrefix.map(prefix -> prefix.append(" ").append(formattableStackText))
 					.orElse(formattableStackText);
-				IFormattableTextComponent suffixedStackText = maybeSuffix.map(suffix -> prefixedStackText.appendString(" ").append(suffix))
+				MutableText suffixedStackText = maybeSuffix.map(suffix -> prefixedStackText.append(" ").append(suffix))
 					.orElse(prefixedStackText);
-				stack.setDisplayName(suffixedStackText.mergeStyle(this.minorStyle.orElse(DEFAULT_MINOR_STYLE)));
+				stack.setCustomName(suffixedStackText.fillStyle(this.minorStyle.orElse(DEFAULT_MINOR_STYLE)));
 			}
 		}
 
 		return stack;
 	}
 
-	public static class Serializer extends LootFunction.Serializer<NameEnchantedItem>
+	public static class Serializer extends ConditionalLootFunction.Serializer<NameEnchantedItem>
 	{
 		public static final Style.Serializer STYLE_SERIALIZER = new Style.Serializer();
 		
 		@Override
-		public NameEnchantedItem deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn)
+		public NameEnchantedItem fromJson(JsonObject object, JsonDeserializationContext deserializationContext, LootCondition[] conditionsIn)
 		{
 			JsonElement minorStyleElement = object.get("minor_style");
 			JsonElement majorStyleElement = object.get("major_style");
@@ -168,14 +166,14 @@ public class NameEnchantedItem extends LootFunction
 				.map(styleDeserializer);
 			Optional<Style> majorStyle = Optional.ofNullable(majorStyleElement)
 				.map(styleDeserializer);
-			boolean ignoreEnchantments = JSONUtils.getBoolean(object, "ignore_enchantments", false);
+			boolean ignoreEnchantments = JsonHelper.getBoolean(object, "ignore_enchantments", false);
 			return new NameEnchantedItem(conditionsIn, minorStyle, majorStyle, ignoreEnchantments);
 		}
 
 		@Override
-		public void serialize(JsonObject jsonObject, NameEnchantedItem lootFunction, JsonSerializationContext serializer)
+		public void toJson(JsonObject jsonObject, NameEnchantedItem lootFunction, JsonSerializationContext serializer)
 		{
-			super.serialize(jsonObject, lootFunction, serializer);
+			super.toJson(jsonObject, lootFunction, serializer);
 			lootFunction.minorStyle.ifPresent(style -> jsonObject.add("minor_style", STYLE_SERIALIZER.serialize(style, Style.class, serializer)));
 			lootFunction.majorStyle.ifPresent(style -> jsonObject.add("major_style", STYLE_SERIALIZER.serialize(style, Style.class, serializer)));
 			if (lootFunction.ignoreEnchantments)
@@ -185,36 +183,36 @@ public class NameEnchantedItem extends LootFunction
 		}
 	}
 	
-	public static IFormattableTextComponent getEpicName(ItemStack stack, LootContext context)
+	public static MutableText getEpicName(ItemStack stack, LootContext context)
 	{
 		Random random = context.getRandom();
-		Pair<IFormattableTextComponent,IFormattableTextComponent> words = getRandomWords(stack, random);
+		Pair<MutableText,MutableText> words = getRandomWords(stack, random);
 		return words.getLeft()
-			.append(new StringTextComponent(" "))
+			.append(new LiteralText(" "))
 			.append(words.getRight());
 	}
 	
-	public static Pair<IFormattableTextComponent,IFormattableTextComponent> getRandomWords(ItemStack stack, Random rand)
+	public static Pair<MutableText,MutableText> getRandomWords(ItemStack stack, Random rand)
 	{
 		Item item = stack.getItem();
-		ITagCollection<Item> tags = ItemTags.getCollection();
+		TagGroup<Item> tags = ItemTags.getTagGroup();
 		int indices = rand.nextInt(4);	// 0,1,2,3
 		int first = indices / 2;			// 0,0,1,1 = prefix,prefix,noun,noun
 		int second = (indices%2) + 1;		// 1,2,1,2 = noun  ,suffix,noun,suffix
-		List<List<List<IFormattableTextComponent>>> lists = Looot.INSTANCE.wordMaps.stream()
-			.map(map ->map.translationKeys.entrySet().stream() // stream of EntrySet<ResourceLocation,Set<IFormattableTextComponent>>
+		List<List<List<MutableText>>> lists = Looot.INSTANCE.wordMaps.stream()
+			.map(map ->map.translationKeys.entrySet().stream() // stream of EntrySet<Identifier,Set<MutableText>>
 				// get all entries such that either the entry is the ALL entry or the entry is a valid tag that contains the item
-				.filter(entry -> entry.getKey().equals(ALL) || isTagValidForItem(tags.get(entry.getKey()), item))
-				.map(entry -> entry.getValue()) // stream of Set<IFormattableTextComponent>
-				.collect(Collectors.toCollection(ArrayList<List<IFormattableTextComponent>>::new)))
-			.collect(Collectors.toCollection(ArrayList<List<List<IFormattableTextComponent>>>::new));
-		IntFunction<IFormattableTextComponent> getter = i -> RandomHelper.getRandomThingFromMultipleLists(rand, lists.get(i))
+				.filter(entry -> entry.getKey().equals(ALL) || isTagValidForItem(tags.getTag(entry.getKey()), item))
+				.map(Map.Entry::getValue) // stream of Set<MutableText>
+				.collect(Collectors.toCollection(ArrayList<List<MutableText>>::new)))
+			.collect(Collectors.toCollection(ArrayList<List<List<MutableText>>>::new));
+		IntFunction<MutableText> getter = i -> RandomHelper.getRandomThingFromMultipleLists(rand, lists.get(i))
 			.orElse(UNKNOWN_DESCRIPTOR);
 		return Pair.of(getter.apply(first), getter.apply(second));
 	
 	}
 	
-	static boolean isTagValidForItem(@Nullable ITag<Item> tag, Item item)
+	static boolean isTagValidForItem(@Nullable Tag<Item> tag, Item item)
 	{
 		return tag != null && tag.contains(item);
 	}

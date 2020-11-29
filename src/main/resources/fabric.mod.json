@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "looot",
+  "version": "${version}",
+
+  "name": "Looot",
+  "icon": "logo.png",
+  "description": "A fabric mod that adds additional loot table utilities",
+  "license": "MIT",
+  "contact": {
+    "sources": "https://github.com/Boundarybreaker/looot"
+  },
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "commoble.looot.Looot"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.4.0"
+  },
+  "custom": {
+    "modmenu:api": true
+  }
+}

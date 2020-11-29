@@ -1,18 +1,8 @@
-
-buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-    }
+plugins {
+	id "fabric-loom" version "0.5-SNAPSHOT"
+	id "eclipse"
+	id "maven-publish"
 }
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
 
 version = "${mod_version}"
 group = "commoble.${modid}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -28,76 +18,19 @@ sourceSets
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: "${mappings_version}"    
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    
-    runs {
-        client {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                looot {
-					source sourceSets.main
-                }
-                "looot-example-mod"
-                {
-                	source sourceSets.examplemod
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                looot {
-					source sourceSets.main
-                }
-                "looot-example-mod"
-                {
-                	source sourceSets.examplemod
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'modid', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                looot {
-					source sourceSets.main
-                }
-                "looot-example-mod"
-                {
-                	source sourceSets.examplemod
-                }
-            }
-        }
-    }
 }
 
 repositories {
-  maven {
-    // location of the maven that hosts JEI files
-    name = "Progwml6 maven"
-    url = "https://dvs1.progwml6.com/files/maven/"
-  }
-  maven {
-    // location of a maven mirror for JEI files, as a fallback
-    name = "ModMaven"
-    url = "https://modmaven.k-4u.nl"
-  }
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+	minecraft "com.mojang:minecraft:${mc_version}"
+	mappings "net.fabricmc:yarn:${mc_version}+build.${yarn_build}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+	compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -131,8 +64,6 @@ artifacts {
 	archives sourcesJar
 	// archives examplemodJar
 }
-
-jar.finalizedBy('reobfJar')
 
 // run "gradlew build publish" to build jars and generate a maven repo for them
 // run "gradlew build" to build the jars without mavening them

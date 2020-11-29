@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "looot-examplemod",
+  "version": "1.0.0",
+
+  "name": "Looot (example mod)",
+  "description": "Example mod for Looot",
+  "license": "MIT",
+  "contact": {
+    "sources": "https://github.com/Boundarybreaker/looot"
+  },
+  "environment": "*",
+  "depends": {
+    "fabricloader": ">=0.4.0"
+  }
+}

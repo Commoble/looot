@@ -4,29 +4,27 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class DataCodecs
 {
-	public static final Codec<Enchantment> ENCHANTMENT = makeRegistryEntryCodec(ForgeRegistries.ENCHANTMENTS);
+	public static final Codec<Enchantment> ENCHANTMENT = makeRegistryEntryCodec(Registry.ENCHANTMENT);
 	
-	public static final <T extends IForgeRegistryEntry<T>> Codec<T> makeRegistryEntryCodec(IForgeRegistry<T> registry)
+	public static final <T> Codec<T> makeRegistryEntryCodec(Registry<T> registry)
 	{
-		return ResourceLocation.CODEC.flatXmap(id -> getRegistryObjectOrError(registry, id), obj -> DataResult.success(obj.getRegistryName()));
+		return Identifier.CODEC.flatXmap(id -> getRegistryObjectOrError(registry, id), obj -> DataResult.success(registry.getId(obj)));
 	}
 	
-	static <T extends IForgeRegistryEntry<T>> DataResult<T> getRegistryObjectOrError(IForgeRegistry<T> registry, ResourceLocation id)
+	static <T> DataResult<T> getRegistryObjectOrError(Registry<T> registry, Identifier id)
 	{
-		if (registry.containsKey(id))
+		if (registry.containsId(id))
 		{
-			return DataResult.success(registry.getValue(id));
+			return DataResult.success(registry.get(id));
 		}
 		else
 		{
-			return DataResult.error(String.format("Failed to decode registry object: no %s registered for id %s", registry.getRegistryName().toString(), id.toString()));
+			return DataResult.error(String.format("Failed to decode registry object: no %s registered for id %s", registry.getKey().getValue().toString(), id.toString()));
 		}
 	}
 }
