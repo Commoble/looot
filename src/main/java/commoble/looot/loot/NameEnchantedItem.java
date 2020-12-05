@@ -189,9 +189,9 @@ public class NameEnchantedItem extends LootFunction
 	{
 		Random random = context.getRandom();
 		Pair<IFormattableTextComponent,IFormattableTextComponent> words = getRandomWords(stack, random);
-		return words.getLeft()
+		return words.getLeft().deepCopy()
 			.append(new StringTextComponent(" "))
-			.append(words.getRight());
+			.append(words.getRight().deepCopy());
 	}
 	
 	public static Pair<IFormattableTextComponent,IFormattableTextComponent> getRandomWords(ItemStack stack, Random rand)
