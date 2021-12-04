@@ -222,18 +222,8 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
 		// now that we're on the main thread, we can finalize the data
 		this.data = processedData;
 		this.logger.info("Data loader for {} loaded {} finalized objects", this.folderName, this.data.size());
-		
-		// hacky server test until we can find a better way to do this
-		boolean isServer = true;
-		try
-		{
-			LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-		}
-		catch(Exception e)
-		{
-			isServer = false;
-		}
-		if (isServer)
+
+		if (ServerLifecycleHooks.getCurrentServer() != null)
 		{
 			// if we're on the server and we are configured to send syncing packets, send syncing packets
 			this.syncOnReloadCallback.ifPresent(Runnable::run);
