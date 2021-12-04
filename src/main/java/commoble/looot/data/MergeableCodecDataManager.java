@@ -62,7 +62,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.server.ServerLifecycleHooks;
