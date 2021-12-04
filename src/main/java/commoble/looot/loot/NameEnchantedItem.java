@@ -50,8 +50,8 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 	public static final TranslatableComponent VERY_UNKNOWN_ENCHANTMENT_PREFIX = new TranslatableComponent("looot.unknown_enchantment.prefix");
 	public static final TranslatableComponent VERY_UNKNOWN_ENCHANTMENT_SUFFIX = new TranslatableComponent("looot.unknown_enchantment.suffix");
 	public static final TranslatableComponent UNKNOWN_DESCRIPTOR = new TranslatableComponent("looot.unknown_descriptor");
-	public static final Style DEFAULT_MINOR_STYLE = Style.EMPTY.applyFormat(ChatFormatting.AQUA);
-	public static final Style DEFAULT_MAJOR_STYLE = Style.EMPTY.applyFormat(ChatFormatting.LIGHT_PURPLE);
+	public static final Style DEFAULT_MINOR_STYLE = Style.EMPTY.applyFormat(ChatFormatting.AQUA).withItalic(false);
+	public static final Style DEFAULT_MAJOR_STYLE = Style.EMPTY.applyFormat(ChatFormatting.LIGHT_PURPLE).withItalic(false);
 	
 	protected final boolean ignoreEnchantments; // if true, will use the "epic name" regardless of the item's enchantments
 	protected final Optional<Style> minorStyle;	// style to be used for 1-2 enchantment items, defaults to aqua text
