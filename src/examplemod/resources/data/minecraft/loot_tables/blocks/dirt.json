@@ -8,7 +8,7 @@
 			[
 				{
 					"type": "minecraft:loot_table",
-					"name": "loootexamplemod:subtables/random_loot_with_enchantments"
+					"name": "looot_example_mod:subtables/random_loot_with_enchantments"
 				}
 			]
 		}

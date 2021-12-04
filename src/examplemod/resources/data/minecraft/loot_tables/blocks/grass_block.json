@@ -8,7 +8,7 @@
 			[
 				{
 					"type": "minecraft:loot_table",
-					"name": "loootexamplemod:subtables/weapons",
+					"name": "looot_example_mod:subtables/weapons",
 					"functions":
 					[
 						{
