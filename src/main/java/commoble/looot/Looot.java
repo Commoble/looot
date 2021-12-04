@@ -11,7 +11,7 @@ import commoble.looot.data.EnchantmentNameLimitManager;
 import commoble.looot.data.NameListManager;
 import commoble.looot.loot.ApplyFunctionsIfTagged;
 import commoble.looot.loot.NameEnchantedItem;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;

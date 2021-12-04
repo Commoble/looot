@@ -10,41 +10,41 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
 import commoble.looot.Looot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootFunction;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.loot.functions.ILootFunction;
-import net.minecraft.loot.functions.LootFunctionManager;
-import net.minecraft.tags.ITag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
+import net.minecraft.tags.Tag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 
 //let's say we want to run one or more loot functions if a generated item belongs to an itemtag
 //this can't be done by the vanilla loot conditions or functions, so it's a good candidate for making a new feature
 //unfortunately, loot conditions can't observe the itemstack itself, so we have to write the condition as a loot function instead
-public class ApplyFunctionsIfTagged extends LootFunction
+public class ApplyFunctionsIfTagged extends LootItemConditionalFunction
 {
 	public static final ResourceLocation ID = new ResourceLocation(Looot.MODID, "apply_functions_if_tagged");
 	public static final String TAG_KEY = "tag";
 	public static final String FUNCTIONS_KEY = "functions";
-	public static final LootFunctionType TYPE = new LootFunctionType(new ApplyFunctionsIfTagged.Serializer());
+	public static final LootItemFunctionType TYPE = new LootItemFunctionType(new ApplyFunctionsIfTagged.Serializer());
 
-	private final ITag<Item> tag;
-	private final ILootFunction[] subFunctions;
+	private final Tag<Item> tag;
+	private final LootItemFunction[] subFunctions;
 
-	public ApplyFunctionsIfTagged(ILootCondition[] conditions, ResourceLocation tagName, ILootFunction[] subFunctions)
+	public ApplyFunctionsIfTagged(LootItemCondition[] conditions, ResourceLocation tagName, LootItemFunction[] subFunctions)
 	{
 		super(conditions);
-		this.tag = ItemTags.makeWrapperTag(tagName.toString());
+		this.tag = ItemTags.bind(tagName.toString());
 		this.subFunctions = subFunctions;
 	}
 
 	@Override
-	public LootFunctionType getFunctionType()
+	public LootItemFunctionType getType()
 	{
 		return TYPE;
 	}
@@ -55,12 +55,12 @@ public class ApplyFunctionsIfTagged extends LootFunction
 	// an item tag
 	// (the tag and the functions are specified by the loot table json)
 	@Override
-	protected ItemStack doApply(ItemStack stack, LootContext context)
+	protected ItemStack run(ItemStack stack, LootContext context)
 	{
 		ItemStack newStack = stack;
 
 		// mash all the functions into one function for simplicity's sake
-		BiFunction<ItemStack, LootContext, ItemStack> combinedFunction = LootFunctionManager.combine(this.subFunctions);
+		BiFunction<ItemStack, LootContext, ItemStack> combinedFunction = LootItemFunctions.compose(this.subFunctions);
 		if (this.tag.contains(stack.getItem()))
 		{
 			newStack = combinedFunction.apply(newStack, context);
@@ -69,16 +69,16 @@ public class ApplyFunctionsIfTagged extends LootFunction
 	}
 
 	// builders are used for autogenerating loot tables from code
-	public static LootFunction.Builder<?> getBuilder(ResourceLocation tag, ILootFunction ... subFunctions)
+	public static LootItemConditionalFunction.Builder<?> getBuilder(ResourceLocation tag, LootItemFunction ... subFunctions)
 	{
-		return builder((conditions) -> {
+		return simpleBuilder((conditions) -> {
 			return new ApplyFunctionsIfTagged(conditions, tag, subFunctions);
 		});
 	}
 
 	// The serializer is used for generating loot table jsons from code
 	// The deserializer is used for reading a loot table json into code
-	public static class Serializer extends LootFunction.Serializer<ApplyFunctionsIfTagged>
+	public static class Serializer extends LootItemConditionalFunction.Serializer<ApplyFunctionsIfTagged>
 	{
 		// writing to json is very similar to writing to NBT
 		@Override
@@ -104,14 +104,14 @@ public class ApplyFunctionsIfTagged extends LootFunction
 
 		@Override
 		public ApplyFunctionsIfTagged deserialize(JsonObject baseObject,
-				JsonDeserializationContext deserializationContext, ILootCondition[] conditions)
+				JsonDeserializationContext deserializationContext, LootItemCondition[] conditions)
 		{
 			// get the tag from the json
-			ResourceLocation tagRL = new ResourceLocation(JSONUtils.getString(baseObject, TAG_KEY));
+			ResourceLocation tagRL = new ResourceLocation(GsonHelper.getAsString(baseObject, TAG_KEY));
 
 			// get the functions from the json
-			ILootFunction[] subFunctions = JSONUtils.deserializeClass(baseObject, FUNCTIONS_KEY, new ILootFunction[0],
-					deserializationContext, ILootFunction[].class);
+			LootItemFunction[] subFunctions = GsonHelper.getAsObject(baseObject, FUNCTIONS_KEY, new LootItemFunction[0],
+					deserializationContext, LootItemFunction[].class);
 
 			return new ApplyFunctionsIfTagged(conditions, tagRL, subFunctions);
 		}

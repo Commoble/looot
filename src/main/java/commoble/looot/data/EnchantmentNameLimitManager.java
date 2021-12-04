@@ -10,10 +10,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
 
 public class EnchantmentNameLimitManager extends MergeableCodecDataManager<EnchantmentNameLimits, Map<Enchantment, Integer>>
 {	
@@ -28,7 +28,7 @@ public class EnchantmentNameLimitManager extends MergeableCodecDataManager<Encha
 	}
 
 	@Override
-	protected void apply(Map<ResourceLocation, Map<Enchantment, Integer>> processedData, IResourceManager resourceManager, IProfiler profiler)
+	protected void apply(Map<ResourceLocation, Map<Enchantment, Integer>> processedData, ResourceManager resourceManager, ProfilerFiller profiler)
 	{
 		super.apply(processedData, resourceManager, profiler);
 		this.limits = combineMergedData(processedData);		

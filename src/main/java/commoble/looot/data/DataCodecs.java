@@ -3,8 +3,8 @@ package commoble.looot.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
