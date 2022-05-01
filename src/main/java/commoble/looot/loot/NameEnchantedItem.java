@@ -3,14 +3,13 @@ package commoble.looot.loot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -23,15 +22,12 @@ import commoble.looot.Looot;
 import commoble.looot.util.RandomHelper;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.MutableComponent;
@@ -39,6 +35,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public class NameEnchantedItem extends LootItemConditionalFunction
@@ -196,26 +193,19 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 	
 	public static Pair<MutableComponent,MutableComponent> getRandomWords(ItemStack stack, Random rand)
 	{
-		Item item = stack.getItem();
-		TagCollection<Item> tags = ItemTags.getAllTags();
 		int indices = rand.nextInt(4);	// 0,1,2,3
 		int first = indices / 2;			// 0,0,1,1 = prefix,prefix,noun,noun
 		int second = (indices%2) + 1;		// 1,2,1,2 = noun  ,suffix,noun,suffix
 		List<List<List<MutableComponent>>> lists = Looot.INSTANCE.wordMaps.stream()
 			.map(map ->map.translationKeys.entrySet().stream() // stream of EntrySet<ResourceLocation,Set<IFormattableTextComponent>>
 				// get all entries such that either the entry is the ALL entry or the entry is a valid tag that contains the item
-				.filter(entry -> entry.getKey().equals(ALL) || isTagValidForItem(tags.getTag(entry.getKey()), item))
-				.map(entry -> entry.getValue()) // stream of Set<IFormattableTextComponent>
+				.filter(entry -> entry.getKey().equals(ALL) || stack.is(TagKey.create(Registry.ITEM_REGISTRY, entry.getKey())))
+				.map(Entry::getValue) // stream of Set<IFormattableTextComponent>
 				.collect(Collectors.toCollection(ArrayList<List<MutableComponent>>::new)))
 			.collect(Collectors.toCollection(ArrayList<List<List<MutableComponent>>>::new));
 		IntFunction<MutableComponent> getter = i -> RandomHelper.getRandomThingFromMultipleLists(rand, lists.get(i))
 			.orElse(UNKNOWN_DESCRIPTOR);
 		return Pair.of(getter.apply(first), getter.apply(second));
 	
-	}
-	
-	static boolean isTagValidForItem(@Nullable Tag<Item> tag, Item item)
-	{
-		return tag != null && tag.contains(item);
 	}
 }

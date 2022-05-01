@@ -1,7 +1,5 @@
 package commoble.looot.loot;
 
-import java.util.function.BiFunction;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.gson.JsonDeserializationContext;
@@ -10,22 +8,24 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
 import commoble.looot.Looot;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-//let's say we want to run one or more loot functions if a generated item belongs to an itemtag
-//this can't be done by the vanilla loot conditions or functions, so it's a good candidate for making a new feature
-//unfortunately, loot conditions can't observe the itemstack itself, so we have to write the condition as a loot function instead
+/**
+ * let's say we want to run one or more loot functions if a generated item belongs to an itemtag<br>
+ * this can't be done by the vanilla loot conditions or functions, so it's a good candidate for making a new feature<br>
+ * unfortunately, loot conditions can't observe the itemstack itself, so we have to write the condition as a loot function instead
+ */
 public class ApplyFunctionsIfTagged extends LootItemConditionalFunction
 {
 	public static final ResourceLocation ID = new ResourceLocation(Looot.MODID, "apply_functions_if_tagged");
@@ -33,13 +33,13 @@ public class ApplyFunctionsIfTagged extends LootItemConditionalFunction
 	public static final String FUNCTIONS_KEY = "functions";
 	public static final LootItemFunctionType TYPE = new LootItemFunctionType(new ApplyFunctionsIfTagged.Serializer());
 
-	private final Tag<Item> tag;
+	private final TagKey<Item> tag;
 	private final LootItemFunction[] subFunctions;
 
 	public ApplyFunctionsIfTagged(LootItemCondition[] conditions, ResourceLocation tagName, LootItemFunction[] subFunctions)
 	{
 		super(conditions);
-		this.tag = ItemTags.bind(tagName.toString());
+		this.tag = TagKey.create(Registry.ITEM_REGISTRY, tagName);
 		this.subFunctions = subFunctions;
 	}
 
@@ -59,11 +59,10 @@ public class ApplyFunctionsIfTagged extends LootItemConditionalFunction
 	{
 		ItemStack newStack = stack;
 
-		// mash all the functions into one function for simplicity's sake
-		BiFunction<ItemStack, LootContext, ItemStack> combinedFunction = LootItemFunctions.compose(this.subFunctions);
-		if (this.tag.contains(stack.getItem()))
+		if (stack.is(this.tag))
 		{
-			newStack = combinedFunction.apply(newStack, context);
+			// mash all the functions into one function for simplicity's sake
+			newStack = LootItemFunctions.compose(this.subFunctions).apply(newStack, context);
 		}
 		return newStack;
 	}
