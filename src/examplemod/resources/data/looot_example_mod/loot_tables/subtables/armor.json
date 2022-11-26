@@ -8,31 +8,31 @@
           "type": "minecraft:tag",
           "weight": 10,
           "expand": true,
-          "name": "forge:armor/iron"
+          "name": "forge:armors/iron"
         },
         {
           "type": "minecraft:tag",
           "weight": 10,
           "expand": true,
-          "name": "forge:armor/chainmail"
+          "name": "forge:armors/chainmail"
         },
         {
           "type": "minecraft:tag",
           "weight": 10,
           "expand": true,
-          "name": "forge:armor/leather"
+          "name": "forge:armors/leather"
         },
         {
           "type": "minecraft:tag",
           "weight": 3,
           "expand": true,
-          "name": "forge:armor/golden"
+          "name": "forge:armors/golden"
         },
         {
           "type": "minecraft:tag",
           "weight": 1,
           "expand": true,
-          "name": "forge:armor/diamond"
+          "name": "forge:armors/diamond"
         }
       ]
     }

@@ -1,15 +1,16 @@
-package commoble.looot.util;
+package commoble.looot;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import javax.annotation.Nullable;
+
+import net.minecraft.util.RandomSource;
 
 public class RandomHelper
 {
 	@Nullable
-	public static <T> T getRandomThingFrom(Random rand, List<T> things)
+	public static <T> T getRandomThingFrom(RandomSource rand, List<T> things)
 	{
 		int size = things.size();
 		return size > 0
@@ -19,7 +20,7 @@ public class RandomHelper
 	
 	@SafeVarargs
 	@Nullable
-	public static <T> T chooseRandomThing(Random rand, T...things)
+	public static <T> T chooseRandomThing(RandomSource rand, T...things)
 	{
 		int size = things.length;
 		return size > 0
@@ -33,7 +34,7 @@ public class RandomHelper
 	 * @param lists
 	 * @return
 	 */
-	public static <T> Optional<T> getRandomThingFromMultipleLists(Random rand, List<? extends List<T>> lists)
+	public static <T> Optional<T> getRandomThingFromMultipleLists(RandomSource rand, List<? extends List<T>> lists)
 	{
 		// get sum of sizes of lists
 		int totalSize = lists.stream().reduce(0, (size, list) -> size + list.size(), (sizeA,sizeB) -> sizeA+sizeB);

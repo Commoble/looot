@@ -6,9 +6,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -18,13 +15,12 @@ import net.minecraft.resources.ResourceLocation;
 public class EnchantmentNameLimitManager extends MergeableCodecDataManager<EnchantmentNameLimits, Map<Enchantment, Integer>>
 {	
 	public static final String FOLDER_NAME = "looot/enchantment_name_limits";
-	static final Logger LOGGER = LogManager.getLogger();
 	
 	public @Nonnull Object2IntOpenHashMap<Enchantment> limits = new Object2IntOpenHashMap<>();
 
 	public EnchantmentNameLimitManager()
 	{
-		super(FOLDER_NAME, LOGGER, EnchantmentNameLimits.CODEC, EnchantmentNameLimitManager::mergeData);
+		super(FOLDER_NAME, EnchantmentNameLimits.CODEC, EnchantmentNameLimitManager::mergeData);
 	}
 
 	@Override

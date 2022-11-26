@@ -50,6 +50,6 @@ A library mod that adds additional loot table utilities
 [[dependencies.looot]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.2, 1.19)"
+    versionRange="[1.19.2, 1.19.3)"
     ordering="NONE"
     side="BOTH"

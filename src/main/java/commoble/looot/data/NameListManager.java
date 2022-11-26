@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Logger;
-
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 public class NameListManager extends MergeableCodecDataManager<NameList, List<String>>
 {
@@ -20,9 +18,9 @@ public class NameListManager extends MergeableCodecDataManager<NameList, List<St
 	 * the translation keys are of the form e.g. "modid.looot.namewords.prefixes.folders.subfolders.word"
 	 */
 	public Map<ResourceLocation, List<MutableComponent>> translationKeys = new HashMap<>();
-	public NameListManager(String folderName, Logger logger)
+	public NameListManager(String folderName)
 	{
-		super(folderName, logger, NameList.CODEC, NameList::merge);
+		super(folderName, NameList.CODEC, NameList::merge);
 	}
 	
 	@Override
@@ -40,9 +38,9 @@ public class NameListManager extends MergeableCodecDataManager<NameList, List<St
 		{
 			String modid = id.getNamespace();
 			String path = id.getPath();
-			String header = String.join(".", modid, this.folderName, path).replace("/", ".");
+			String header = String.join(".", modid, this.folderName(), path).replace("/", ".");
 			List<MutableComponent> keyList = words.stream()
-				.map(s -> new TranslatableComponent(header + "." + s))
+				.map(s -> Component.translatable(header + "." + s))
 				.collect(Collectors.toList());
 			output.put(id, keyList);
 		});

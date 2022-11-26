@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -19,7 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 
 import commoble.looot.Looot;
-import commoble.looot.util.RandomHelper;
+import commoble.looot.RandomHelper;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.ItemStack;
@@ -29,24 +28,22 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.RandomSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.TranslatableComponent;
 
 public class NameEnchantedItem extends LootItemConditionalFunction
 {
-	public static final ResourceLocation ID = new ResourceLocation(Looot.MODID, "name_enchanted_item");
 	public static final LootItemFunctionType TYPE = new LootItemFunctionType(new NameEnchantedItem.Serializer());
 	public static final ResourceLocation ALL = new ResourceLocation(Looot.MODID, "all");
 	public static final ResourceLocation UNKNOWN_ENCHANTMENT = new ResourceLocation(Looot.MODID, "unknown_enchantment");
-	public static final TranslatableComponent VERY_UNKNOWN_ENCHANTMENT_PREFIX = new TranslatableComponent("looot.unknown_enchantment.prefix");
-	public static final TranslatableComponent VERY_UNKNOWN_ENCHANTMENT_SUFFIX = new TranslatableComponent("looot.unknown_enchantment.suffix");
-	public static final TranslatableComponent UNKNOWN_DESCRIPTOR = new TranslatableComponent("looot.unknown_descriptor");
+	public static final String VERY_UNKNOWN_ENCHANTMENT_PREFIX = "looot.unknown_enchantment.prefix";
+	public static final String VERY_UNKNOWN_ENCHANTMENT_SUFFIX = "looot.unknown_enchantment.suffix";
+	public static final String UNKNOWN_DESCRIPTOR = "looot.unknown_descriptor";
 	public static final Style DEFAULT_MINOR_STYLE = Style.EMPTY.applyFormat(ChatFormatting.AQUA).withItalic(false);
 	public static final Style DEFAULT_MAJOR_STYLE = Style.EMPTY.applyFormat(ChatFormatting.LIGHT_PURPLE).withItalic(false);
 	
@@ -68,7 +65,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 		return TYPE;
 	}
 	
-	public static MutableComponent getNameForEnchantment(boolean isPrefix, Enchantment enchantment, int level, Random rand)
+	public static MutableComponent getNameForEnchantment(boolean isPrefix, Enchantment enchantment, int level, RandomSource rand)
 	{
 		// check the defined enchantment name limits for the given enchantment
 		int maxKnownLevel = Looot.INSTANCE.enchantmentNameLimits.limits.getOrDefault(enchantment, 0);
@@ -80,7 +77,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 		if (highestNameableLevel > 0)
 		{
 			String position = isPrefix ? ".prefix." : ".suffix.";
-			return new TranslatableComponent(enchantment.getDescriptionId()+position+level);
+			return Component.translatable(enchantment.getDescriptionId()+position+level);
 		}
 		else
 		{
@@ -95,8 +92,8 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 			else
 			{
 				return isPrefix
-					? VERY_UNKNOWN_ENCHANTMENT_PREFIX
-					: VERY_UNKNOWN_ENCHANTMENT_SUFFIX;
+					? Component.translatable(VERY_UNKNOWN_ENCHANTMENT_PREFIX)
+					: Component.translatable(VERY_UNKNOWN_ENCHANTMENT_SUFFIX);
 			}
 		}
 	}
@@ -108,7 +105,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 		BinaryOperator<Map.Entry<Enchantment, Integer>> biggestReducer = (a,b) -> b.getValue() > a.getValue() ? b : a;
 //		BinaryOperator<Map.Entry<Enchantment, Integer>> smallestReducer = (a,b) -> b.getValue() < a.getValue() ? b : a;
 		
-		Random rand = context.getRandom();
+		RandomSource rand = context.getRandom();
 //		Function<Boolean, Function<? super Map.Entry<Enchantment, Integer>, ? extends IFormattableTextComponent>> mapperGetter =
 ////			position -> entry -> new TranslationTextComponent(entry.getKey().getName()+position+entry.getValue().toString());
 //			position -> entry -> getNameForEnchantment(position, entry.getKey(), entry.getValue(), rand);
@@ -184,14 +181,14 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 	
 	public static MutableComponent getEpicName(ItemStack stack, LootContext context)
 	{
-		Random random = context.getRandom();
+		RandomSource random = context.getRandom();
 		Pair<MutableComponent,MutableComponent> words = getRandomWords(stack, random);
 		return words.getLeft().copy()
-			.append(new TextComponent(" "))
+			.append(Component.literal(" "))
 			.append(words.getRight().copy());
 	}
 	
-	public static Pair<MutableComponent,MutableComponent> getRandomWords(ItemStack stack, Random rand)
+	public static Pair<MutableComponent,MutableComponent> getRandomWords(ItemStack stack, RandomSource rand)
 	{
 		int indices = rand.nextInt(4);	// 0,1,2,3
 		int first = indices / 2;			// 0,0,1,1 = prefix,prefix,noun,noun
@@ -204,7 +201,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 				.collect(Collectors.toCollection(ArrayList<List<MutableComponent>>::new)))
 			.collect(Collectors.toCollection(ArrayList<List<List<MutableComponent>>>::new));
 		IntFunction<MutableComponent> getter = i -> RandomHelper.getRandomThingFromMultipleLists(rand, lists.get(i))
-			.orElse(UNKNOWN_DESCRIPTOR);
+			.orElse(Component.translatable(UNKNOWN_DESCRIPTOR));
 		return Pair.of(getter.apply(first), getter.apply(second));
 	
 	}

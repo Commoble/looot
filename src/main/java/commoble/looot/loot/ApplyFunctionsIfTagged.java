@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
-import commoble.looot.Looot;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -28,7 +27,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
  */
 public class ApplyFunctionsIfTagged extends LootItemConditionalFunction
 {
-	public static final ResourceLocation ID = new ResourceLocation(Looot.MODID, "apply_functions_if_tagged");
+	public static final String ID = "apply_functions_if_tagged";
 	public static final String TAG_KEY = "tag";
 	public static final String FUNCTIONS_KEY = "functions";
 	public static final LootItemFunctionType TYPE = new LootItemFunctionType(new ApplyFunctionsIfTagged.Serializer());
