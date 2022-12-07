@@ -1,3 +1,6 @@
+## 1.19.2-1.2.0.1
+* Fixed crash on server start due to MergeableCodecDataManager referring to missing ImmutableMap class
+
 ## 1.19.2-1.2.0.0
 * Updated to 1.19.2. Now requires forge 43.1.0 or higher.
 * Added "looot:add_table" global loot modifier, which rolls loot from a specified secondary loot table and adds the result to the target loot. Example loot modifier json that adds loot to pillager outpost chests:
