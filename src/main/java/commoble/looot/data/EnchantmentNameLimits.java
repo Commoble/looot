@@ -5,7 +5,7 @@ import java.util.Map;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 public class EnchantmentNameLimits
@@ -13,7 +13,7 @@ public class EnchantmentNameLimits
 	@SuppressWarnings("deprecation")
 	public static final Codec<EnchantmentNameLimits> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.BOOL.optionalFieldOf("replace", false).forGetter(EnchantmentNameLimits::getReplace),
-			Codec.unboundedMap(Registry.ENCHANTMENT.byNameCodec(), Codec.INT).fieldOf("values").forGetter(EnchantmentNameLimits::getValues)
+			Codec.unboundedMap(BuiltInRegistries.ENCHANTMENT.byNameCodec(), Codec.INT).fieldOf("values").forGetter(EnchantmentNameLimits::getValues)
 		).apply(instance, EnchantmentNameLimits::new));
 
 	private final boolean replace;

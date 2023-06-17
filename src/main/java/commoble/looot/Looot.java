@@ -14,6 +14,7 @@ import commoble.looot.loot.AddTableModifier;
 import commoble.looot.loot.ApplyFunctionsIfTagged;
 import commoble.looot.loot.NameEnchantedItem;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.MinecraftForge;
@@ -47,7 +48,7 @@ public class Looot
 		
 		forgeBus.addListener(this::onAddReloadListeners);
 		
-		DeferredRegister<LootItemFunctionType> lootItemFunctions = makeDeferredRegister(modBus, Registry.LOOT_FUNCTION_REGISTRY);
+		DeferredRegister<LootItemFunctionType> lootItemFunctions = makeDeferredRegister(modBus, Registries.LOOT_FUNCTION_TYPE);
 		DeferredRegister<Codec<? extends IGlobalLootModifier>> lootModifierSerializers = makeDeferredRegister(modBus, ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS);
 		
 		lootItemFunctions.register(Names.APPLY_FUNCTIONS_IF_TAGGED, () -> ApplyFunctionsIfTagged.TYPE);

@@ -19,22 +19,22 @@ import com.google.gson.JsonSerializationContext;
 
 import commoble.looot.Looot;
 import commoble.looot.RandomHelper;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.util.RandomSource;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.Registry;
 
 public class NameEnchantedItem extends LootItemConditionalFunction
 {
@@ -196,7 +196,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 		List<List<List<MutableComponent>>> lists = Looot.INSTANCE.wordMaps.stream()
 			.map(map ->map.translationKeys.entrySet().stream() // stream of EntrySet<ResourceLocation,Set<IFormattableTextComponent>>
 				// get all entries such that either the entry is the ALL entry or the entry is a valid tag that contains the item
-				.filter(entry -> entry.getKey().equals(ALL) || stack.is(TagKey.create(Registry.ITEM_REGISTRY, entry.getKey())))
+				.filter(entry -> entry.getKey().equals(ALL) || stack.is(TagKey.create(Registries.ITEM, entry.getKey())))
 				.map(Entry::getValue) // stream of Set<IFormattableTextComponent>
 				.collect(Collectors.toCollection(ArrayList<List<MutableComponent>>::new)))
 			.collect(Collectors.toCollection(ArrayList<List<List<MutableComponent>>>::new));

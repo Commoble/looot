@@ -1,19 +1,10 @@
-
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'java'
 }
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 version = "${mod_version}"
 group = "commoble.${modid}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -106,12 +97,12 @@ jar {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = "javadoc"
+	archiveClassifier = "javadoc"
 	from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-	classifier = "sources"
+	archiveClassifier = "sources"
 	from sourceSets.main.allJava
 }
 

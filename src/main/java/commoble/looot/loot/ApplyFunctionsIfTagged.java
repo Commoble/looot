@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
@@ -38,7 +38,7 @@ public class ApplyFunctionsIfTagged extends LootItemConditionalFunction
 	public ApplyFunctionsIfTagged(LootItemCondition[] conditions, ResourceLocation tagName, LootItemFunction[] subFunctions)
 	{
 		super(conditions);
-		this.tag = TagKey.create(Registry.ITEM_REGISTRY, tagName);
+		this.tag = TagKey.create(Registries.ITEM, tagName);
 		this.subFunctions = subFunctions;
 	}
 
