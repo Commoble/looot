@@ -1,3 +1,9 @@
+## 1.20.1-1.2.0.3
+* Fixed TagLoader error on server start due to forge:tools/polearms tag referencing forge:tools/axes and forge:tools/hoes tags, which no longer exist. Polearms tag now references minecraft:axes and minecraft:hoes tags.
+
+## 1.20.1-1.2.0.2
+* Updated to Minecraft 1.20.1
+
 ## 1.19.2-1.2.0.1
 * Fixed crash on server start due to MergeableCodecDataManager referring to missing ImmutableMap class
 
