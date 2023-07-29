@@ -39,12 +39,11 @@ public class AddTableModifier extends LootModifier
 		return this.table;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context)
 	{
 		LootTable extraTable = context.getResolver().getLootTable(this.table);
-		extraTable.getRandomItems(context, generatedLoot::add); // don't run loot modifiers for subtables
+		extraTable.getRandomItemsRaw(context, LootTable.createStackSplitter(context.getLevel(), generatedLoot::add)); // don't run loot modifiers for subtables
 		return generatedLoot;
 	}
 

@@ -1,3 +1,7 @@
+## 1.20.1-1.2.0.4
+* Fix infinite loop in add_table loot modifier
+* Fix #forge:weapons tag to refer to vanilla #swords tag instead of no-longer-existing #forge:tools/swords
+
 ## 1.20.1-1.2.0.3
 * Fixed TagLoader error on server start due to forge:tools/polearms tag referencing forge:tools/axes and forge:tools/hoes tags, which no longer exist. Polearms tag now references minecraft:axes and minecraft:hoes tags.
 

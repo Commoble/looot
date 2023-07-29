@@ -1,0 +1,11 @@
+{
+	"type": "looot:add_table",
+	"conditions":
+	[
+		{
+			"condition": "forge:loot_table_id",
+			"loot_table_id": "minecraft:blocks/sand"
+		}
+	],
+	"table": "looot_example_mod:subtables/random_loot_with_enchantments"
+}
