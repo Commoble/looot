@@ -131,12 +131,8 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 	{
 		ItemEnchantments enchantments = stack.getAllEnchantments(context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
 		BinaryOperator<Object2IntMap.Entry<Holder<Enchantment>>> biggestReducer = (a,b) -> b.getIntValue() > a.getIntValue() ? b : a;
-//		BinaryOperator<Map.Entry<Enchantment, Integer>> smallestReducer = (a,b) -> b.getValue() < a.getValue() ? b : a;
 		
 		RandomSource rand = context.getRandom();
-//		Function<Boolean, Function<? super Map.Entry<Enchantment, Integer>, ? extends IFormattableTextComponent>> mapperGetter =
-////			position -> entry -> new TranslationTextComponent(entry.getKey().getName()+position+entry.getValue().toString());
-//			position -> entry -> getNameForEnchantment(position, entry.getKey(), entry.getValue(), rand);
 		
 		// if number of enchantments is at least three, generate an epic name and ignore the three smallest enchantments in the next phase
 		int enchantmentCount = enchantments.size();
