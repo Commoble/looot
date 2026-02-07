@@ -8,12 +8,12 @@
 			[
 				{
 					"type": "minecraft:loot_table",
-					"name": "looot:subtables/weapons",
+					"value": "looot:subtables/weapons",
 					"functions":
 					[
 						{
-							"function": "looot:apply_functions_if_tagged",
-							"tag": "c:weapons/wood",
+							"function": "looot:apply_functions_to_items",
+							"items": "#c:weapons/wood",
 							"functions":
 							[
 								{

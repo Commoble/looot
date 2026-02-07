@@ -28,7 +28,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
  */
 public class ApplyFunctionsToItems extends LootItemConditionalFunction
 {	
-	public static final ResourceKey<MapCodec<? extends LootItemFunction>> KEY = ResourceKey.create(Registries.LOOT_FUNCTION_TYPE, Looot.id("apply_functions_if_tagged"));
+	public static final ResourceKey<MapCodec<? extends LootItemFunction>> KEY = ResourceKey.create(Registries.LOOT_FUNCTION_TYPE, Looot.id("apply_functions_to_items"));
 	public static final DeferredHolder<MapCodec<? extends LootItemFunction>, MapCodec<ApplyFunctionsToItems>> HOLDER = DeferredHolder.create(KEY);
 	
 	public static final MapCodec<ApplyFunctionsToItems> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(

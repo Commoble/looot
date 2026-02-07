@@ -151,7 +151,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 				.reduce(biggestReducer);
 			
 			Optional<Object2IntMap.Entry<Holder<Enchantment>>> secondBiggest = enchantments.entrySet().stream()
-				.filter(entry -> entry != biggest.get())	// if biggest is empty then this won't be evaluated
+				.filter(entry -> entry.getKey() != biggest.get().getKey())	// if biggest is empty then this won't be evaluated
 				.reduce(biggestReducer);
 			
 			Pair<Optional<Object2IntMap.Entry<Holder<Enchantment>>>, Optional<Object2IntMap.Entry<Holder<Enchantment>>>> twoBiggest = context.getRandom().nextBoolean()

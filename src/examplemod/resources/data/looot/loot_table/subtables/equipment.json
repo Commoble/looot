@@ -8,11 +8,11 @@
 			[
 				{
 					"type": "minecraft:loot_table",
-					"name": "looot_example_mod:subtables/weapons"
+					"value": "looot:subtables/weapons"
 				},
 				{
 					"type": "minecraft:loot_table",
-					"name": "looot_example_mod:subtables/armor"
+					"value": "looot:subtables/armor"
 				},
 				{
 					"type": "minecraft:item",
@@ -24,7 +24,7 @@
 				},
 				{
 					"type": "minecraft:tag",
-					"name": "forge:tools",
+					"name": "c:tools",
 					"expand": true
 				}
 				
