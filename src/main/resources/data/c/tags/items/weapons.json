@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#swords",
+    "#c:tools/polearm",
+    "#c:tools/missile_weapon",
+    "#c:tools/trident"
+  ]
+}

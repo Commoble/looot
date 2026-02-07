@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "#swords",
-    "#forge:tools/polearms",
-    "#forge:tools/missile_weapons",
-    "#forge:tools/tridents"
-  ]
-}

@@ -8,12 +8,12 @@
 			[
 				{
 					"type": "minecraft:loot_table",
-					"name": "looot_example_mod:subtables/weapons",
+					"name": "looot:subtables/weapons",
 					"functions":
 					[
 						{
 							"function": "looot:apply_functions_if_tagged",
-							"tag": "forge:weapons/wooden",
+							"tag": "c:weapons/wood",
 							"functions":
 							[
 								{

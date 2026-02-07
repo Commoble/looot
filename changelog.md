@@ -15,6 +15,7 @@
 }
 ```
 * Enchantment name limits are now a datamap under `data/looot/data_maps/enchantment/name_limits.json`, file format has not changed
+* Updated lots of tags to c system
 
 ## 1.20.1-1.2.0.4
 * Fix infinite loop in add_table loot modifier
