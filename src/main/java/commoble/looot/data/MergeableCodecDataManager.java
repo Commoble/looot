@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,17 +42,11 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
-import net.minecraftforge.network.simple.SimpleChannel;
 
 /**
  * Generic data loader for Codec-parsable data.
@@ -63,7 +56,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  * @param <RAW> The type of the objects that the codec is parsing jsons as
  * @param <FINE> The type of the object we get after merging the parsed objects. Can be the same as RAW
  */
-public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReloadListener<Map<ResourceLocation, FINE>>
+public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReloadListener<Map<Identifier, FINE>>
 {
 	private static final Logger LOGGER = LogManager.getLogger();
 	
@@ -73,7 +66,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
 	protected static final int JSON_EXTENSION_LENGTH = JSON_EXTENSION.length();
 	
 	/** the loaded data **/
-	protected Map<ResourceLocation, FINE> data = new HashMap<>();
+	protected Map<Identifier, FINE> data = new HashMap<>();
 	
 	private final String folderName;
 	private final Codec<RAW> codec;
@@ -107,25 +100,25 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
 	/**
 	 * @return The immutable map of data entries
 	 */
-	public Map<ResourceLocation, FINE> getData()
+	public Map<Identifier, FINE> getData()
 	{
 		return this.data;
 	}
 
 	/** Off-thread processing (can include reading files from hard drive) **/
 	@Override
-	protected Map<ResourceLocation, FINE> prepare(final ResourceManager resourceManager, final ProfilerFiller profiler)
+	protected Map<Identifier, FINE> prepare(final ResourceManager resourceManager, final ProfilerFiller profiler)
 	{
 		LOGGER.info("Beginning loading of data for data loader: {}", this.folderName);
-		final Map<ResourceLocation, FINE> map = new HashMap<>();
+		final Map<Identifier, FINE> map = new HashMap<>();
 
-		Map<ResourceLocation,List<Resource>> resourceStacks = resourceManager.listResourceStacks(this.folderName, id -> id.getPath().endsWith(JSON_EXTENSION));
+		Map<Identifier,List<Resource>> resourceStacks = resourceManager.listResourceStacks(this.folderName, id -> id.getPath().endsWith(JSON_EXTENSION));
 		for (var entry : resourceStacks.entrySet())
 		{
 			List<RAW> raws = new ArrayList<>();
-			ResourceLocation fullId = entry.getKey();
+			Identifier fullId = entry.getKey();
 			String fullPath = fullId.getPath(); // includes folderName/ and .json
-			ResourceLocation id = new ResourceLocation(
+			Identifier id = Identifier.fromNamespaceAndPath(
 				fullId.getNamespace(),
 				fullPath.substring(this.folderName.length() + 1, fullPath.length() - JSON_EXTENSION_LENGTH));
 			
@@ -152,38 +145,9 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
 	
 	/** Main-thread processing, runs after prepare concludes **/
 	@Override
-	protected void apply(final Map<ResourceLocation, FINE> processedData, final ResourceManager resourceManager, final ProfilerFiller profiler)
+	protected void apply(final Map<Identifier, FINE> processedData, final ResourceManager resourceManager, final ProfilerFiller profiler)
 	{
 		// now that we're on the main thread, we can finalize the data
 		this.data = processedData;
-	}
-
-	/**
-	 * This should be called at most once, during construction of your mod
-	 * Calling this method automatically subscribes a packet-sender to {@link OnDatapackSyncEvent}.
-	 * @param <PACKET> the packet type that will be sent on the given channel
-	 * @param channel The networking channel of your mod
-	 * @param packetFactory  A packet constructor or factory method that converts the given map to a packet object to send on the given channel
-	 * @return this manager object
-	 */
-	public <PACKET> MergeableCodecDataManager<RAW, FINE> subscribeAsSyncable(final SimpleChannel channel,
-		final Function<Map<ResourceLocation, FINE>, PACKET> packetFactory)
-	{
-		MinecraftForge.EVENT_BUS.addListener(this.getDatapackSyncListener(channel, packetFactory));
-		return this;
-	}
-	
-	/** Generate an event listener function for the on-datapack-sync event **/
-	private <PACKET> Consumer<OnDatapackSyncEvent> getDatapackSyncListener(final SimpleChannel channel,
-		final Function<Map<ResourceLocation, FINE>, PACKET> packetFactory)
-	{
-		return event -> {
-			ServerPlayer player = event.getPlayer();
-			PACKET packet = packetFactory.apply(this.data);
-			PacketTarget target = player == null
-				? PacketDistributor.ALL.noArg()
-				: PacketDistributor.PLAYER.with(() -> player);
-			channel.send(target, packet);
-		};
 	}
 }

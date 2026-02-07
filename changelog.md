@@ -1,3 +1,21 @@
+## 26.1.0.0
+* Updated to MC 26.1
+* Removed `looot:add_table` loot modifier as it has been superceded by neoforge's `neoforge:add_table` loot modifier
+* Renamed `looot:apply_functions_if_tagged` to `looot:apply_functions_to_items`, it now accepts a holderset instead of a tag:
+```json
+{
+	"type": "looot:apply_functions_if_tagged",
+	"conditions: [
+		// list of conditions, optional field
+	],
+	"items": "#tag_id", // accepts an item id, list of item ids, or tag id hashtag
+	"functions": [
+		// list of function objects
+	]
+}
+```
+* Enchantment name limits are now a datamap under `data/looot/data_maps/enchantment/name_limits.json`, file format has not changed
+
 ## 1.20.1-1.2.0.4
 * Fix infinite loop in add_table loot modifier
 * Fix #forge:weapons tag to refer to vanilla #swords tag instead of no-longer-existing #forge:tools/swords

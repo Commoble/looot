@@ -8,26 +8,12 @@ import java.util.Set;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public class NameList
+public record NameList(boolean replace, List<String> values)
 {
 	public static final Codec<NameList> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.BOOL.optionalFieldOf("replace", false).forGetter(NameList::getReplace),
-			Codec.STRING.listOf().fieldOf("values").forGetter(NameList::getValues)
+			Codec.BOOL.optionalFieldOf("replace", false).forGetter(NameList::replace),
+			Codec.STRING.listOf().fieldOf("values").forGetter(NameList::values)
 		).apply(instance, NameList::new));
-
-	private final boolean replace;
-
-	public boolean getReplace()
-	{
-		return this.replace;
-	}
-
-	private final List<String> values;
-
-	public List<String> getValues()
-	{
-		return this.values;
-	}
 
 	public NameList(final boolean replace, final List<String> values)
 	{
@@ -40,11 +26,11 @@ public class NameList
 		Set<String> set = new HashSet<>();
 		for (NameList raw : raws)
 		{
-			if (raw.getReplace())
+			if (raw.replace())
 			{
 				set = new HashSet<>();
 			}
-			set.addAll(raw.getValues());
+			set.addAll(raw.values());
 		}
 		
 		List<String> out = new ArrayList<>(set.size());
