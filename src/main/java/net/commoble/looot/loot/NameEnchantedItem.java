@@ -115,7 +115,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 				: Looot.EPIC_NAME_SUFFIXES.translationKeys.get(UNKNOWN_ENCHANTMENT);
 			if (names.size() > 0)
 			{
-				return RandomHelper.getRandomThingFrom(rand, names);
+				return RandomHelper.getRandomThingFrom(rand, names).copy();
 			}
 			else
 			{
@@ -157,16 +157,13 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 			Optional<MutableComponent> maybePrefix = twoBiggest.getLeft().map(entry -> getNameForEnchantment(true, entry.getKey(), entry.getIntValue(), rand));
 			Optional<MutableComponent> maybeSuffix = twoBiggest.getRight().map(entry -> getNameForEnchantment(false, entry.getKey(), entry.getIntValue(), rand));
 			
-			Component stackText = stack.getHoverName();
-			if (stackText instanceof MutableComponent)
-			{
-				MutableComponent formattableStackText = (MutableComponent)stackText;
-				MutableComponent prefixedStackText = maybePrefix.map(prefix -> prefix.append(" ").append(formattableStackText))
-					.orElse(formattableStackText);
-				MutableComponent suffixedStackText = maybeSuffix.map(suffix -> prefixedStackText.append(" ").append(suffix))
-					.orElse(prefixedStackText);
-				stack.set(DataComponents.CUSTOM_NAME, suffixedStackText.withStyle(this.minorStyle.orElse(DEFAULT_MINOR_STYLE)));
-			}
+			Component stackText = stack.getItemName();
+			MutableComponent formattableStackText = stackText.copy();
+			MutableComponent prefixedStackText = maybePrefix.map(prefix -> prefix.append(" ").append(formattableStackText))
+				.orElse(formattableStackText);
+			MutableComponent suffixedStackText = maybeSuffix.map(suffix -> prefixedStackText.append(" ").append(suffix))
+				.orElse(prefixedStackText);
+			stack.set(DataComponents.CUSTOM_NAME, suffixedStackText.withStyle(this.minorStyle.orElse(DEFAULT_MINOR_STYLE)));
 		}
 
 		return stack;
