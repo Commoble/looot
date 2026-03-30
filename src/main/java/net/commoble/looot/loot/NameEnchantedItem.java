@@ -3,13 +3,13 @@ package net.commoble.looot.loot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -94,7 +94,8 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 	public static MutableComponent getNameForEnchantment(boolean isPrefix, Holder<Enchantment> enchantment, int level, RandomSource rand)
 	{
 		// check the defined enchantment name limits for the given enchantment
-		int maxKnownLevel = Objects.requireNonNullElse(enchantment.getData(Looot.ENCHANTMENT_NAME_LIMITS), 0);
+		@Nullable Integer maxKnownLevelKnown = enchantment.getData(Looot.ENCHANTMENT_NAME_LIMITS);
+		int maxKnownLevel = maxKnownLevelKnown == null ? 0 : maxKnownLevelKnown;
 		
 		// cap the given level by the name limit
 		int highestNameableLevel = Math.min(maxKnownLevel, level);

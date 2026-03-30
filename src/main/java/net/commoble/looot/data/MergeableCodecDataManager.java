@@ -36,6 +36,7 @@ import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.NonNull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -56,7 +57,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
  * @param <RAW> The type of the objects that the codec is parsing jsons as
  * @param <FINE> The type of the object we get after merging the parsed objects. Can be the same as RAW
  */
-public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReloadListener<Map<Identifier, FINE>>
+public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReloadListener<@NonNull Map<Identifier, FINE>>
 {
 	private static final Logger LOGGER = LogManager.getLogger();
 	

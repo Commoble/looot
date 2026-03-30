@@ -74,6 +74,18 @@ configurations {
 	examplemodRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
+repositories {
+	mavenLocal()
+    maven {
+        name = "Maven for PR #2977" // https://github.com/neoforged/NeoForge/pull/2977
+        url = uri("https://prmaven.neoforged.net/NeoForge/pr2977")
+        content {
+            includeModule("net.neoforged", "neoforge")
+            includeModule("net.neoforged", "testframework")
+        }
+    }
+}
+
 dependencies {
 	examplemodImplementation sourceSets.main.output
 }

@@ -1,5 +1,5 @@
 ## 26.1.0.0
-* Updated to MC 26.1
+* Updated to MC 26.1 (requires neoforge 26.1.0.17-beta or higher)
 * Removed `looot:add_table` loot modifier as it has been superceded by neoforge's `neoforge:add_table` loot modifier
 * Renamed `looot:apply_functions_if_tagged` to `looot:apply_functions_to_items`, it now accepts a holderset instead of a tag:
 ```json
@@ -16,6 +16,78 @@
 ```
 * Enchantment name limits are now a datamap under `data/looot/data_maps/enchantment/name_limits.json`, file format has not changed
 * Updated lots of tags to c system
+* Added new datapack registry looot/artifact
+	* Files in this registry have paths `data/modid/looot/artifact/path.json` whose object would have id `modid:path`
+	* This is a datapack registry and therefore supports tags but not /reload
+	* Objects in this registry are LootPoolEntryContainers and have the same format as loot pool entries; for example:
+```json
+{
+	"type": "minecraft:item",
+	"name": "minecraft:stone_sword",
+	"functions": [
+		// etc
+	]
+}
+```
+* Added loot pool entry type `looot:artifacts` which specifies one or more artifacts, randomly selects one, and uses it to generate loot
+
+```json
+{
+	"type": "looot:artifacts",
+	"artifacts": "#modid:common_artifacts", // can be an artifact id, list of ids, or #tag id
+	"weight": 1
+}
+```
+
+* Added `/looot give_artifact` command to give a specified artifact to a specified player
+* Added entity sub-predicate type "looot:dead" which matches entities which are dead
+* Added enchantment entity effect type "looot:add_food" which adds (or subtracts) food/saturation from affected players:
+
+```json
+{
+	"type": "looot:add_food",
+	"nutrition": {"type": "linear", "base": 1, "per_level_above_first": 1}, // how many hunger points to restore to the player (half-drumsticks). May be negative to subtract instead of add.
+	"saturation": {"type": "linear", "base": 0.2, "per_level_above_first": 0.2} // how much saturation to restore to the player (or subtract, if negative)
+}
+```
+
+* Added enchantment entity effect type "looot:affect_nearby_entities" which applies a specified entity effect to entities around the target entity:
+
+```json
+{
+	"type": "looot:affect_nearby_entities",
+	"radius": 5.0, // radius in blocks / meters to apply affect
+	"spherical": true, // if true, applies in a sphere; defaults false if not specified, applying in a cube instead
+	"include_target": true, // defaults false if not specified
+	"keep_original_position": true, // if true, applies affects using position of primary target instead of area targets; defaults false if not specified
+	"predicate": {
+		// optional EntityPredicate object to filter entities in area
+	},
+	"effect": {
+		// sub-effect to apply to nearby entities
+	}
+}
+```
+
+* Added enchantment entity effect type "looot:apply_mob_effect_better", which is similar to the vanilla apply_mob_effect effect but with additional fields:
+
+```json
+{
+	"type": "looot:apply_mob_effect_better",
+	"to_apply": "modid:some_mob_effect", // can be a holderset
+	"min_duration": 10.0, // min duration of effect in seconds, may be a LevelBasedValue
+	"max_duration": 10.0, // max duration of effect in seconds, may be a LevelBasedValue
+	"min_amplifier": 0.0,	// min level of effect, may be a LevelBasedValue
+	"max_amplifier": 0.0,	// max level of effect, may be a LevelBasedValue
+	"ambient": false,	// optional, defaults false; affects display of icon
+	"visible": true,	// optional, defaults true; whether to show effect particles
+	"show_icon": true,	// optional, defaults true
+	"hidden_effect": { // optional sub-ApplyMobEffectBetter object
+		"to_apply": "etc",
+		// if present, generates another effect to replace the primary effect when it expires
+	}
+}
+```
 
 ## 1.20.1-1.2.0.4
 * Fix infinite loop in add_table loot modifier
