@@ -52,7 +52,7 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 	public static final DeferredHolder<MapCodec<? extends LootItemFunction>, MapCodec<NameEnchantedItem>> HOLDER = DeferredHolder.create(KEY);
 	
 	public static final MapCodec<NameEnchantedItem> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
-			LootItemCondition.TYPED_CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(f -> f.predicates),
+			LootItemCondition.CODEC.optionalFieldOf("conditions").forGetter(f -> f.condition),
 			Style.Serializer.CODEC.optionalFieldOf("minor_style").forGetter(NameEnchantedItem::minorStyle),
 			Style.Serializer.CODEC.optionalFieldOf("major_style").forGetter(NameEnchantedItem::majorStyle),
 			Codec.BOOL.optionalFieldOf("ignore_enchantments", false).forGetter(NameEnchantedItem::ignoreEnchantments)
@@ -62,9 +62,9 @@ public class NameEnchantedItem extends LootItemConditionalFunction
 	protected final Optional<Style> minorStyle;	// style to be used for 1-2 enchantment items, defaults to aqua text
 	protected final Optional<Style> majorStyle;	// style to be used for 3+ enchantment items, defaults to light purple text
 	
-	public NameEnchantedItem(List<LootItemCondition> conditions, Optional<Style> minorStyle, Optional<Style> majorStyle, boolean ignoreEnchantments)
+	public NameEnchantedItem(Optional<Holder<LootItemCondition>> condition, Optional<Style> minorStyle, Optional<Style> majorStyle, boolean ignoreEnchantments)
 	{
-		super(conditions);
+		super(condition);
 		this.minorStyle = minorStyle;
 		this.majorStyle = majorStyle;
 		this.ignoreEnchantments = ignoreEnchantments;

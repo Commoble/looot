@@ -1,3 +1,10 @@
+## 26.3.0.0
+* Updated to MC 26.3 / Neoforge 26.3.0.22-beta
+* Removed artifacts system as vanilla now supports loot table tags, which is the only reason artifacts existed
+
+## 26.2.0.0
+* Updated to MC 26.2 / Neoforge 26.2.0.81
+
 ## 26.1.0.0
 * Updated to MC 26.1 (requires neoforge 26.1.0.17-beta or higher)
 * Removed `looot:add_table` loot modifier as it has been superceded by neoforge's `neoforge:add_table` loot modifier

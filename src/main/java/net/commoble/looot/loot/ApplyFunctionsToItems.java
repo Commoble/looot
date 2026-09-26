@@ -1,16 +1,16 @@
 package net.commoble.looot.loot;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.commoble.looot.Looot;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.core.registries.codec.HolderSetCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,17 +32,17 @@ public class ApplyFunctionsToItems extends LootItemConditionalFunction
 	public static final DeferredHolder<MapCodec<? extends LootItemFunction>, MapCodec<ApplyFunctionsToItems>> HOLDER = DeferredHolder.create(KEY);
 	
 	public static final MapCodec<ApplyFunctionsToItems> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
-			LootItemCondition.DIRECT_CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(f -> f.predicates),
+			LootItemCondition.CODEC.optionalFieldOf("conditions").forGetter(f -> f.condition),
 			HolderSetCodec.create(Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false).fieldOf("items").forGetter(ApplyFunctionsToItems::items),
-			LootItemFunctions.TYPED_CODEC.listOf().fieldOf("functions").forGetter(ApplyFunctionsToItems::functions)
+			LootItemFunctions.LIST_CODEC.fieldOf("functions").forGetter(ApplyFunctionsToItems::functions)
 		).apply(builder, ApplyFunctionsToItems::new));
 
 	private final HolderSet<Item> items;
-	private final List<LootItemFunction> functions;
+	private final HolderSet<LootItemFunction> functions;
 
-	public ApplyFunctionsToItems(List<LootItemCondition> conditions, HolderSet<Item> items, List<LootItemFunction> functions)
+	public ApplyFunctionsToItems(Optional<Holder<LootItemCondition>> condition, HolderSet<Item> items, HolderSet<LootItemFunction> functions)
 	{
-		super(conditions);
+		super(condition);
 		this.items = items;
 		this.functions = functions;
 	}
@@ -58,7 +58,7 @@ public class ApplyFunctionsToItems extends LootItemConditionalFunction
 		return this.items;
 	}
 	
-	public List<LootItemFunction> functions()
+	public HolderSet<LootItemFunction> functions()
 	{
 		return this.functions;
 	}
@@ -76,16 +76,19 @@ public class ApplyFunctionsToItems extends LootItemConditionalFunction
 		if (stack.is(this.items))
 		{
 			// mash all the functions into one function for simplicity's sake
-			newStack = LootItemFunctions.compose(this.functions).apply(newStack, context);
+			for (Holder<LootItemFunction> holder : this.functions) {
+				LootItemFunction function = holder.value();
+				newStack = function.apply(newStack, context);
+			}
 		}
 		return newStack;
 	}
 
 	// builders are used for autogenerating loot tables from code
-	public static LootItemConditionalFunction.Builder<?> getBuilder(HolderSet<Item> items, LootItemFunction ... functions)
+	public static LootItemConditionalFunction.Builder<?> getBuilder(HolderSet<Item> items, HolderSet<LootItemFunction> functions)
 	{
 		return simpleBuilder((conditions) -> {
-			return new ApplyFunctionsToItems(conditions, items, Arrays.asList(functions));
+			return new ApplyFunctionsToItems(conditions, items, functions);
 		});
 	}
 }

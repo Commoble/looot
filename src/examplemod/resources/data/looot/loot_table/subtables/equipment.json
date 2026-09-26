@@ -24,7 +24,7 @@
 				},
 				{
 					"type": "minecraft:tag",
-					"name": "c:tools",
+					"items": "#c:tools",
 					"expand": true
 				}
 				

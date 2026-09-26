@@ -2,10 +2,11 @@ package net.commoble.looot.enchantment;
 
 import org.jspecify.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import net.commoble.looot.Looot;
-import net.minecraft.advancements.criterion.EntitySubPredicate;
+import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -25,22 +26,16 @@ public enum DeadEntityPredicate implements EntitySubPredicate
 	INSTANCE;
 	
 	/// minecraft:entity_sub_predicate_type / looot:dead
-	public static final ResourceKey<MapCodec<? extends EntitySubPredicate>> KEY = ResourceKey.create(Registries.ENTITY_SUB_PREDICATE_TYPE, Looot.id("dead"));
+	public static final ResourceKey<Codec<? extends EntitySubPredicate>> KEY = ResourceKey.create(Registries.ENTITY_SUB_PREDICATE_TYPE, Looot.id("dead"));
 	/// holder
-	public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<DeadEntityPredicate>> HOLDER = DeferredHolder.create(KEY);
+	public static final DeferredHolder<Codec<? extends EntitySubPredicate>, Codec<DeadEntityPredicate>> HOLDER = DeferredHolder.create(KEY);
 	
 	/// ```json
 	/// {
 	/// 	"type": "looot:dead"
 	/// }
 	/// ```
-	public static final MapCodec<DeadEntityPredicate> CODEC = MapCodec.unit(INSTANCE);
-
-	@Override
-	public MapCodec<? extends EntitySubPredicate> codec()
-	{
-		return CODEC;
-	}
+	public static final Codec<DeadEntityPredicate> CODEC = MapCodec.unitCodec(INSTANCE);
 
 	@Override
 	public boolean matches(Entity entity, ServerLevel level, @Nullable Vec3 position)

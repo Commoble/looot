@@ -25,7 +25,8 @@ displayName="Looot" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://www.curseforge.com/minecraft/mc-mods/looot" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="logo.png" #optional
+bannerFile="logo.png" #optional
+iconFile="logo.png" #optional
 # A text field displayed in the mod UI
 credits="I hear the Minecraft Mod Development discord channel is the cat's bananas" #optional
 # A text field displayed in the mod UI
@@ -41,7 +42,7 @@ A library mod that adds additional loot table utilities
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[26.1.0.17-beta,)" #mandatory
+    versionRange="[26.3.0.6-beta,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -51,6 +52,6 @@ A library mod that adds additional loot table utilities
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[26.1,26.2)"
+    versionRange="[26.3,26.4)"
     ordering="NONE"
     side="BOTH"
